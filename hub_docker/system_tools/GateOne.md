@@ -1,14 +1,36 @@
 # GateOne
 
+## 简介
+
+GateOne 是一款使用 HTML5 技术编写的网页版 SSH 终端模拟器，非常高大尚，它有以下特点：
+
+1. 基于现代的 HTML5 技术，无需任何浏览器插件。
+2. 支持多个 SSH 进程。
+3. 可以嵌入到其他任意应用程序中。
+4. 支持使用 JavaScript，Python 甚至纯 CSS 编写的插件。
+5. 支持 SSH 进程副本，打开多个进程而无需重复输入密码。
+6. 支持各种服务器端的日志功能，支持 Keberos-based 单点登录甚至活动目录。
+7. 支持操作日志记录，具有操作记录回放功能。
+
+综上所述，GateOne 可以作为一种堡垒机的开源解决方案。
+
+## 官方镜像
+
 [liftoff/gateone](https://hub.docker.com/r/liftoff/gateone/)
 
-docker run -t -p 443:8000 -h Rats --name gateone liftoff/gateone gateone
+## 启动命令
 
+```sh
+docker run -d --name gateone -h gateone -p 12222:8000 --restart=always \
+  -e TZ=Asia/Shanghai \
+  liftoff/gateone gateone
+```
 
+## 服务使用
 
-https://172.20.32.47/?ssh=ssh://root@172.20.32.47
+访问：https://172.20.32.36:12222/ 即可。
 
-http://172.20.32.47:2222/ssh/host/172.20.32.47
+快捷访问：https://172.20.32.36:12222/?ssh=ssh://root@172.20.32.47 即可。
 
 ## 参考资料
 
