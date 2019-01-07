@@ -20,4 +20,7 @@
     * docker 命令
         * [容器管理](command/container.md)
         * [镜像管理](command/image.md)
+    * docker-compose
+        * [编排文件参考](compose/file_reference.md)
+    * [小技巧](tip.md)
 
