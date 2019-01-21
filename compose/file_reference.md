@@ -38,3 +38,7 @@ docker volume ls
 # 查看具体的 volume 对应的真实地址
 docker volume inspect redissentinel_redis_node1_data
 ```
+
+## 参考资料
+
+[Docker之Compose服务编排](https://www.cnblogs.com/52fhy/p/5991344.html)

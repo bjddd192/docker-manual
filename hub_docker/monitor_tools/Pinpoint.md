@@ -38,3 +38,7 @@ http://10.0.43.25:8081
 [Pinpoint 分布式请求跟踪系统的搭建](https://segmentfault.com/a/1190000011290541)
 
 [Dapper，大规模分布式系统的跟踪系统](http://bigbully.github.io/Dapper-translation/)
+
+[Pinpoint 安装部署](https://www.cnblogs.com/yyhh/p/6106472.html)
+
+[项目系统监控](https://my.oschina.net/u/3084514/blog/1624907)
