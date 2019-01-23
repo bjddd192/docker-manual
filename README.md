@@ -28,3 +28,10 @@ https://github.com/bcicen/ctop
 
 [10张图带你深入理解Docker容器和镜像](http://dockone.io/article/783)
 
+
+镜像加速技巧：
+quay.io 的可以用 ustc 的
+quay.mirrors.ustc.edu.cn/kubernetes-ingress-controller/nginx-ingress-controller:0.22.0
+
+docker stack
+
