@@ -213,6 +213,10 @@ docker exec -it mongo_replica_set03 mongo --port 30022 --host 10.68.0.7
 > exit
 ```
 
+### 分片集群
+
+后续继续深入研究。
+
 ## 参考资料
 
 [MongoDB的Replica Set以及Auth的配置](https://www.cnblogs.com/pbblogs/p/9783964.html)

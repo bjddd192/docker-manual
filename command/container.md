@@ -11,4 +11,7 @@ docker volume ls
 
 # 查看具体的 volume 对应的真实地址
 docker volume inspect VOLUME_NAME
+
+# docker exec 以 root 身份登录容器
+docker exec -it --user root <容器ID> /bin/bash
 ```
