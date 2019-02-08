@@ -8,6 +8,7 @@
             * [GateOne](hub_docker/system_tools/GateOne.md)
             * [WebSSH2](hub_docker/system_tools/WebSSH2.md)
             * [nginx](hub_docker/system_tools/WebSSH2.md)
+            * [shadowsocks](hub_docker/system_tools/shadowsocks.md)
         * 运维工具
             * [rundeck](hub_docker/ops_tools/rundeck.md)
         * 源码管理工具

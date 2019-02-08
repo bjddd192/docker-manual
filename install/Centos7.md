@@ -1,4 +1,6 @@
-# Centos7 安装 docker
+# Centos7 
+
+## 安装 docker
 
 在一台干净的机器上安装 docker，使用阿里云的仓库，加快安装的过程。
 
@@ -14,6 +16,7 @@ yum list docker-ce.x86_64 --showduplicates | sort -r
 yum -y install docker-ce-18.03.0.ce-1.el7.centos
 docker --version
 # Step 4: 重定义对docker0网桥，设置镜像加速器和信任仓库
+mkdir -p /etc/docker
 tee /etc/docker/daemon.json <<-'EOF'
 {
   "ip-forward": true,
@@ -25,7 +28,6 @@ tee /etc/docker/daemon.json <<-'EOF'
   ],
   "insecure-registries": [
     "hub.wonhigh.cn",
-    "yougou.docker",
     "registry.eyd.com:5000"
   ],
   "max-concurrent-downloads": 10,
@@ -61,4 +63,16 @@ docker pull hub.wonhigh.cn/retail/retail-gms-web:1.7.0-SNAPSHOT
 #   Available Packages
 # Step2: 安装指定版本的Docker-CE: (VERSION例如上面的17.03.0.ce.1-1.el7.centos)
 # sudo yum -y install docker-ce-[VERSION]
+```
+
+## 安装 docker-compose
+
+```sh
+# 安装 docker-compose
+curl -L "https://github.com/docker/compose/releases/download/1.23.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+chmod +x /usr/local/bin/docker-compose
+
+# 安装 docker-compose Command-line completion
+yum -y install bash-completion
+curl -L https://raw.githubusercontent.com/docker/compose/1.23.2/contrib/completion/bash/docker-compose -o /etc/bash_completion.d/docker-compose
 ```
