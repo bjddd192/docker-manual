@@ -9,6 +9,7 @@
             * [WebSSH2](hub_docker/system_tools/WebSSH2.md)
             * [nginx](hub_docker/system_tools/WebSSH2.md)
             * [shadowsocks](hub_docker/system_tools/shadowsocks.md)
+            * [dnsmasq](hub_docker/system_tools/dnsmasq.md)
         * 运维工具
             * [rundeck](hub_docker/ops_tools/rundeck.md)
         * 源码管理工具
@@ -17,8 +18,6 @@
             * [Pinpoint](hub_docker/monitor_tools/Pinpoint.md)
         * 开发工具
             * [php](hub_docker/developer_tools/php.md)
-            * [redash](hub_docker/developer_tools/redash.md)
-            * [metabase](hub_docker/developer_tools/metabase.md)
             * [jenkins](hub_docker/developer_tools/jenkins.md)
             * [nexus2](hub_docker/developer_tools/nexus2.md)
         * 数据库
@@ -26,6 +25,9 @@
             * [Oracle](hub_docker/database/Oracle.md)
             * [MongoDB](hub_docker/database/MongoDB.md)
             * [elasticsearch](hub_docker/database/elasticsearch.md)
+        * 大数据
+            * [redash](hub_docker/big_data/redash.md)
+            * [metabase](hub_docker/big_data/metabase.md)
     * docker 命令
         * [容器管理](command/container.md)
         * [镜像管理](command/image.md)
