@@ -19,6 +19,8 @@
             * [php](hub_docker/developer_tools/php.md)
             * [redash](hub_docker/developer_tools/redash.md)
             * [metabase](hub_docker/developer_tools/metabase.md)
+            * [jenkins](hub_docker/developer_tools/jenkins.md)
+            * [nexus2](hub_docker/developer_tools/nexus2.md)
         * 数据库
             * [MySQL](hub_docker/database/mysql.md)
             * [Oracle](hub_docker/database/Oracle.md)

@@ -8,6 +8,14 @@
 
 ## 开源项目
 
+### 官方
+
+[getredash/redash](https://github.com/getredash/redash)
+
+[容器化部署](https://github.com/getredash/redash/tree/master/setup)
+
+### 非官方
+
 [repertory/docker-redash](https://github.com/repertory/docker-redash)
 
 ## 参考资料
@@ -22,3 +30,6 @@
 
 [install needed dependencies to use Hive in Docker image](https://github.com/getredash/redash/pull/1077)
 
+[Redash 备份、还原、升级](https://medium.com/@MarsW/redash-%E5%82%99%E4%BB%BD-%E9%82%84%E5%8E%9F-%E5%8D%87%E7%B4%9A-cc9f856cfd7b)
+
+[CDH开启Kerberos，Java连接impala](https://blog.csdn.net/gabele/article/details/71424189)
