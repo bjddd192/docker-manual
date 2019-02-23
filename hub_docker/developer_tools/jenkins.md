@@ -210,6 +210,14 @@ tee > /data/docker_volumn/jenkins/settings.xml <<'EOF'
             <username>deployment</username>
             <password><![CDATA[deployment@dev123]]></password>
         </server>
+            <server>
+            <id>docker-hub</id>
+            <username>scm</username>
+            <password>n7izpoc6N2</password>
+            <configuration>
+                <email>scm@ex.com</email>
+            </configuration>
+        </server>
     </servers> 
     <mirrors>
         <mirror> 
