@@ -17,8 +17,13 @@ docker run -d --name elasticsearch --restart=always -p 9200:9200 -p 9300:9300 \
   --ulimit nofile=65536:65536 --ulimit memlock=-1:-1 \
   -e "bootstrap.memory_lock=true" \
   -e "discovery.type=single-node" \
+  -e "ES_JAVA_OPTS=-Xms8g -Xmx8g" \
   docker.elastic.co/elasticsearch/elasticsearch:6.5.4
 
 # 检查es健康状态：
 curl http://127.0.0.1:9200/_cat/health
 ```
+
+## 参考资料
+
+[Install Elasticsearch with Docker](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html)

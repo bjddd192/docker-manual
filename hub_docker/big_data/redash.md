@@ -33,3 +33,5 @@
 [Redash 备份、还原、升级](https://medium.com/@MarsW/redash-%E5%82%99%E4%BB%BD-%E9%82%84%E5%8E%9F-%E5%8D%87%E7%B4%9A-cc9f856cfd7b)
 
 [CDH开启Kerberos，Java连接impala](https://blog.csdn.net/gabele/article/details/71424189)
+
+[MongoDB Setup](https://redash.io/help/data-sources/setup/mongodb)

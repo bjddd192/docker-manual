@@ -29,3 +29,7 @@ docker run -d --name rundeck -p 4440:4440 --restart always \
   -v /data/docker_volumn/rundeck/server/config/realm.properties:/home/rundeck/server/config/realm.properties \
   rundeck/rundeck:3.0.11
 ```
+
+## 参考资料
+
+[rundeck用户权限管理](https://blog.csdn.net/wangtingting_100/article/details/80914486)
