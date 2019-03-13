@@ -7,7 +7,7 @@
 ## 启动命令
 
 ```sh
-docker pull docker.elastic.co/elasticsearch/elasticsearch:6.2.4
+docker pull docker.elastic.co/elasticsearch/elasticsearch:6.5.4
 
 /sbin/sysctl -w vm.max_map_count=262144
   

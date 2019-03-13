@@ -20,6 +20,8 @@
             * [php](hub_docker/developer_tools/php.md)
             * [jenkins](hub_docker/developer_tools/jenkins.md)
             * [nexus2](hub_docker/developer_tools/nexus2.md)
+        * 消息工具
+            * [kafka](hub_docker/message_tools/kafka.md)
         * 数据库
             * [MySQL](hub_docker/database/mysql.md)
             * [Oracle](hub_docker/database/Oracle.md)
