@@ -27,3 +27,7 @@ curl http://127.0.0.1:9200/_cat/health
 ## 参考资料
 
 [Install Elasticsearch with Docker](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html)
+
+[elasticsearch 快速开始](https://www.cnblogs.com/cjsblog/p/9439331.html)
+
+[Elasticsearch基本概念及核心配置文件详解](https://www.cnblogs.com/xiaochina/p/6855591.html)
