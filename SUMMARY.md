@@ -10,6 +10,9 @@
             * [nginx](hub_docker/system_tools/WebSSH2.md)
             * [shadowsocks](hub_docker/system_tools/shadowsocks.md)
             * [dnsmasq](hub_docker/system_tools/dnsmasq.md)
+            * [sftp](hub_docker/system_tools/sftp.md)
+            * [ftp](hub_docker/system_tools/ftp.md)
+            * [filezilla](hub_docker/system_tools/filezilla.md)
         * 运维工具
             * [rundeck](hub_docker/ops_tools/rundeck.md)
         * 源码管理工具
@@ -30,6 +33,7 @@
         * 大数据
             * [redash](hub_docker/big_data/redash.md)
             * [metabase](hub_docker/big_data/metabase.md)
+            * [zookeeper](hub_docker/big_data/zookeeper.md)
     * docker 命令
         * [容器管理](command/container.md)
         * [镜像管理](command/image.md)

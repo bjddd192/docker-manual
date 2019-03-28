@@ -14,9 +14,17 @@
 
 [容器化部署](https://github.com/getredash/redash/tree/master/setup)
 
+[Environment Variables Settings](https://redash.io/help/open-source/admin-guide/env-vars-settings)
+
 ### 非官方
 
 [repertory/docker-redash](https://github.com/repertory/docker-redash)
+
+## 问题处理
+
+[Too Many Requests](https://discuss.redash.io/t/429-too-many-requests/1013)
+
+调整 REDASH_THROTTLE_LOGIN_PATTERN 参数可以控制资源保护策略。
 
 ## 参考资料
 
