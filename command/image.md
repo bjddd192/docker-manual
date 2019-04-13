@@ -27,6 +27,8 @@ docker system df
 docker system prune
 # 连同未使用的镜像一并清理
 docker system prune -a
+# 强制清理所有无用对象
+docker system prune --volumes -a -f
 ```
 
 ## 参考资料

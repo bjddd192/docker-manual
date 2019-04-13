@@ -16,9 +16,17 @@
 
 [Environment Variables Settings](https://redash.io/help/open-source/admin-guide/env-vars-settings)
 
+[有关支持，帮助和问题](https://discuss.redash.io/c/support)
+
+[有关功能请求和想法](https://discuss.redash.io/c/feature-requests)
+
 ### 非官方
 
 [repertory/docker-redash](https://github.com/repertory/docker-redash)
+
+## 帮助系列文档
+
+[以Redash为资料视觉化方案之选择与实践系列](https://ithelp.ithome.com.tw/users/20111638/ironman/1671)
 
 ## 问题处理
 
