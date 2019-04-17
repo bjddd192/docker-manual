@@ -21,6 +21,9 @@ docker stats
 docker stats -a --format "table {{.Container}}\t{{.CPUPerc}}\t{{.MemUsage}}"
 # 只拉取一次结果
 docker stats -a --format "table {{.Container}}\t{{.CPUPerc}}\t{{.MemUsage}}" --no-stream
+
+# 解决 docker 终端宽度、高度显示不正确
+docker exec -it --env COLUMNS=`tput cols` --env LINES=`tput lines` your_container_name /bin/bash
 ```
 
 ## 参考资料
