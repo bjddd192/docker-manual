@@ -13,6 +13,7 @@
             * [sftp](hub_docker/system_tools/sftp.md)
             * [ftp](hub_docker/system_tools/ftp.md)
             * [filezilla](hub_docker/system_tools/filezilla.md)
+            * [fastdfs](hub_docker/system_tools/fastdfs.md)
         * 运维工具
             * [rundeck](hub_docker/ops_tools/rundeck.md)
         * 源码管理工具
