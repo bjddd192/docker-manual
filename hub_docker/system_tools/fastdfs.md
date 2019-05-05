@@ -39,3 +39,7 @@ http://10.0.43.38:8080/group1/M00/00/00/CgArJlzOj7uAEBL_AAAAD1NdKGM56.html
 [FastDFS的介绍](https://www.cnblogs.com/shenxm/p/8459292.html)
 
 [Nginx和FastDfs完整配置过程](https://blog.csdn.net/qq_34301871/article/details/80060235)
+
+[FastDFS集群部署](https://www.cnblogs.com/cnmenglang/p/6731209.html)
+
+[FastDFS Java Client](https://cloud.tencent.com/developer/article/1407660)
