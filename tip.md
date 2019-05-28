@@ -27,6 +27,14 @@
 
 因此，我们从宿主机上修改这些文件时，应该采用echo重定向等操作，避免文件的inode发生变化。
 
+## docker容器中如何获取宿主机IP，连接宿主机的某个服务
+
+1.通过环境变量传入docker run --env HOST_IP=192.168.0.160，通过环境变量 $HOST_IP 获取
+
+例如：docker run --rm -it -e HOST_IP=`hostname -i` bjddd192/nginx:1.10.1 bash
+
+2.运行docker时绑定hostdocker run --network host，通过ip route获取
+
 ## 参考资料
 
 [理解 inode](http://www.ruanyifeng.com/blog/2011/12/inode.html)
