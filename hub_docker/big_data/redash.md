@@ -34,6 +34,10 @@
 
 调整 REDASH_THROTTLE_LOGIN_PATTERN 参数可以控制资源保护策略。
 
+[Sharing is currently not supported for dashboards containing queries with parameters.]
+
+后续继续跟进：[ShareDashboardDialog.jsx](https://github.com/getredash/redash/blob/master/client/app/pages/dashboards/ShareDashboardDialog.jsx)
+
 ## 参考资料
 
 [redash docker 运行](https://www.cnblogs.com/rongfengliang/p/9901464.html)
@@ -51,3 +55,5 @@
 [CDH开启Kerberos，Java连接impala](https://blog.csdn.net/gabele/article/details/71424189)
 
 [MongoDB Setup](https://redash.io/help/data-sources/setup/mongodb)
+
+[Redash 使用 Python Query](https://ithelp.ithome.com.tw/articles/10205152?sc=iThelpR)
