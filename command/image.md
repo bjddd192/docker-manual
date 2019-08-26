@@ -34,3 +34,5 @@ docker system prune --volumes -a -f
 ## 参考资料
 
 [Docker 1.13最实用命令行：终于可以愉快地打扫房间了](http://blog.shurenyun.com/shurenyun-docker-204/)
+
+[烂泥：docker.io、gcr.io、quay.io镜像加速](https://www.ilanni.com/?p=14534)
