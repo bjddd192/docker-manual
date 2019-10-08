@@ -16,7 +16,7 @@ cd pinpoint-docker
 # 查看 tag 版本
 git tag
 # 切换 tag 版本
-git checkout 1.8.0
+git checkout 1.8.5
 # 这时候 git 可能会提示你当前处于一个“detached HEAD" 状态。
 # 因为 tag 相当于是一个快照，是不能更改它的代码的。
 # 如果要在 tag 代码的基础上做修改，你需要一个分支： 
@@ -40,6 +40,54 @@ http://10.0.43.25:8079
 
 http://10.0.43.25:8081
 
+## 监控数据清理
+
+数据默认保存 60天。
+
+[pinpoint 修改 hbase 表 TTL 值](https://cloud.tencent.com/developer/article/1423933)
+
+```sh
+docker exec -it pinpoint-hbase bash
+
+# 查找出数据大的 hbase 表
+cd /home/pinpoint/hbase/data/default
+du -sh *
+du -h | grep G
+
+# 进入 hbase 修改表 ttl
+cd /opt/hbase/hbase-1.2.6/bin
+./hbase shell
+> list
+> describe 'TraceV2'
+> disable 'TraceV2'
+> alter 'TraceV2' , {NAME=>'S',TTL=>'604800'}
+> enable 'TraceV2'
+> describe  'TraceV2'
+> major_compact  'TraceV2'
+> describe  'ApplicationTraceIndex'
+> disable 'ApplicationTraceIndex'
+> alter 'ApplicationTraceIndex' , {NAME=>'I',TTL=>'1209600'}
+> enable 'ApplicationTraceIndex'
+> describe  'ApplicationTraceIndex'
+> major_compact  'ApplicationTraceIndex'
+> 
+> # 开发环境执行（清理多余容器id，未成功，清除了agent，数据却不再上来，需要重启应用，不可取）
+> list
+> truncate 'AgentInfo'
+> truncate 'AgentEvent'
+> truncate 'AgentLifeCycle'
+> truncate 'AgentStatV2'
+
+count 'AgentInfo'
+scan 'AgentInfo',{LIMIT => 10}
+```
+
+## 开启告警
+
+```sh
+
+```
+
 ## 参考资料
 
 [docker部署pinpoint，监控docker中的Springboot项目](https://blog.csdn.net/tianyaleixiaowu/article/details/78727050)
@@ -55,3 +103,9 @@ http://10.0.43.25:8081
 [Pinpoint 安装部署](https://www.cnblogs.com/yyhh/p/6106472.html)
 
 [项目系统监控](https://my.oschina.net/u/3084514/blog/1624907)
+
+[docker-compose部署pinpoint开启email报警功能](https://cloud.tencent.com/developer/article/1423177)
+
+[Pinpoint扩展报警](https://blog.csdn.net/xvshu/article/details/79814549)
+
+[pinpoint-docker开启邮件报警和集成钉钉报警推送](https://juejin.im/post/5ca4ac7d51882543b81adf47)
