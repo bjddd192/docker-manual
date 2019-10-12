@@ -78,3 +78,48 @@ chmod +x /usr/local/bin/docker-compose
 yum -y install bash-completion
 curl -L https://raw.githubusercontent.com/docker/compose/1.23.2/contrib/completion/bash/docker-compose -o /etc/bash_completion.d/docker-compose
 ```
+
+## 问题处理
+
+### docker 服务启动报错
+
+现象：
+
+```sh
+-- Unit docker.service has begun starting up.
+Oct 09 01:12:16 suzhou-kubernetes-node-test-10-234-7-159-vm.belle.lan systemd[9467]: Failed at step LIMITS spawning /root/local/bin/dockerd: Operation not permitted
+-- Subject: Process /root/local/bin/dockerd could not be executed
+-- Defined-By: systemd
+-- Support: http://lists.freedesktop.org/mailman/listinfo/systemd-devel
+-- 
+-- The process /root/local/bin/dockerd could not be executed and failed.
+-- 
+-- The error number returned by this process is 1.
+Oct 09 01:12:16 suzhou-kubernetes-node-test-10-234-7-159-vm.belle.lan systemd[9468]: Failed at step LIMITS spawning /sbin/iptables: Operation not permitted
+-- Subject: Process /sbin/iptables could not be executed
+-- Defined-By: systemd
+-- Support: http://lists.freedesktop.org/mailman/listinfo/systemd-devel
+-- 
+-- The process /sbin/iptables could not be executed and failed.
+-- 
+-- The error number returned by this process is 1.
+Oct 09 01:12:16 suzhou-kubernetes-node-test-10-234-7-159-vm.belle.lan systemd[1]: docker.service: main process exited, code=exited, status=205/LIMITS
+Oct 09 01:12:16 suzhou-kubernetes-node-test-10-234-7-159-vm.belle.lan systemd[1]: docker.service: control process exited, code=exited status=205
+Oct 09 01:12:16 suzhou-kubernetes-node-test-10-234-7-159-vm.belle.lan systemd[1]: Failed to start Docker Application Container Engine.
+-- Subject: Unit docker.service has failed
+-- Defined-By: systemd
+-- Support: http://lists.freedesktop.org/mailman/listinfo/systemd-devel
+```
+
+解决办法，执行命令：
+
+```sh
+# 查看 fs.nr_open 值
+sysctl -a | grep fs.nr_open
+# 原因：The docker package set a limit higher than our new limit, so the process was failing to start.
+sysctl -w fs.nr_open=1048576
+```
+
+参考资料：
+
+[Docker won't run on Xenial](https://github.com/scaleway/image-ubuntu/issues/68)

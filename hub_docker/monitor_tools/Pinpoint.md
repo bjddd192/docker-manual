@@ -42,6 +42,22 @@ http://10.0.43.25:8081
 
 ## 监控数据清理
 
+### 清理失效的 agentID
+
+```sh
+http://10.234.6.87:8079/admin/removeInactiveAgents.pinpoint?password=admin
+# durationDays 默认 30，必须大于 30 天
+http://10.234.6.87:8079/admin/removeInactiveAgents.pinpoint?password=admin&durationDays=30
+# 按 agentId 清除数据
+http://10.234.6.87:8079/admin/removeAgentId.pinpoint?applicationName=petrel-priv-api&agentId=0e9bdf1e7818&password=admin
+# 按 applicationName 清除数据（注意：正常的 agentid 也会清除，需重启应用）
+http://10.234.6.87:8079/admin/removeApplicationName.pinpoint?applicationName=petrel-priv-api&password=admin
+```
+
+[How to clean up useless pinpoint agentID](https://github.com/naver/pinpoint/issues/6064)
+
+### 清理hbase
+
 数据默认保存 60天。
 
 [pinpoint 修改 hbase 表 TTL 值](https://cloud.tencent.com/developer/article/1423933)
@@ -77,9 +93,8 @@ cd /opt/hbase/hbase-1.2.6/bin
 > truncate 'AgentEvent'
 > truncate 'AgentLifeCycle'
 > truncate 'AgentStatV2'
-
-count 'AgentInfo'
-scan 'AgentInfo',{LIMIT => 10}
+> count 'AgentInfo'
+> scan 'AgentInfo',{LIMIT => 10}
 ```
 
 ## 开启告警
