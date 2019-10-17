@@ -40,6 +40,17 @@ http://10.0.43.25:8079
 
 http://10.0.43.25:8081
 
+## PINPOINT采集不到数据
+
+pinpoint-agent配置文件pinpoint.config默认配置profiler.sampling.rate=20，即仅采样5%的事务，每20次请求只收集显示1次请求数据。
+
+```sh
+#1 out of n transactions will be sampled where n is the rate. (20: 5%)
+profiler.sampling.rate=20
+```
+
+如果将此选项设置为1，则代理将每1个事务（100％采样）跟踪一次，如果将其设置为10，则每10个事务（10％采样）跟踪一次。
+
 ## 监控数据清理
 
 ### 清理失效的 agentID
@@ -99,6 +110,22 @@ cd /opt/hbase/hbase-1.2.6/bin
 
 ## 开启告警
 
+Pinpoint Web会定期检查应用程序的状态，并在满足某些预配置条件（规则）的情况下触发警报。
+
+这些条件（默认情况下）由Web模块中的后台批处理过程每3分钟检查一次（默认情况下），使用的是最后5分钟的数据。一旦满足条件，批处理过程就会向注册到用户组的用户发送短信/电子邮件。
+
+> 如果每次超过阈值时都发送电子邮件/短信，我们认为该警报消息是垃圾邮件。
+因此，我们决定逐渐提高警报的传输频率。
+例）如果连续发生警报，​​传输频率将增加两倍。3分钟-> 6分钟-> 12分钟-> 24分钟
+
+测试工具，使用 `pinpoint-quickstart` 提供的 web 界面工具，如：http://10.0.43.57:8000/
+
+[I can't receive mail ](https://github.com/naver/pinpoint-docker/issues/18)
+
+[email alarm cannot be triggered with docker deployment](https://github.com/naver/pinpoint/issues/6082)
+
+当前docker版本不支持告警，需等 1.9 版本。
+
 ```sh
 
 ```
@@ -124,3 +151,9 @@ cd /opt/hbase/hbase-1.2.6/bin
 [Pinpoint扩展报警](https://blog.csdn.net/xvshu/article/details/79814549)
 
 [pinpoint-docker开启邮件报警和集成钉钉报警推送](https://juejin.im/post/5ca4ac7d51882543b81adf47)
+
+[Pinpoint 1.8.1-RC1源码编译部署及扩展告警](https://www.gaoyaqiu.com/post/pinpoint/pinpoint-source-compile-alarm/)
+
+[pinpoint1.8.5安装及使用指南](https://www.cnblogs.com/luozhiyun/p/11664534.html)
+
+[Kubernetes 微服务全链路监控Pinpoint（APM）](https://www.liuyalei.top/1692.html)
