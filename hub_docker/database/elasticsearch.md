@@ -59,6 +59,22 @@ harbor.bjds.belle.lan/k8s/kibana:6.5.4
 
 [使用Docker搭建Elasticsearch 6.6.1集群](https://blog.csdn.net/weweeeeeeee/article/details/88405252)
 
+## 查询表达式
+
+```json
+{
+  "query": {
+    "range": {
+      "request_time": {
+        "gt": 1
+      }
+    }
+  }
+}
+
+http://elk-sls.belle.net.cn/app/kibana#/discover?_g=(refreshInterval:(display:Off,pause:!f,value:0),time:(from:now%2Fd,mode:quick,to:now%2Fd))&_a=(columns:!(message),filters:!(('$state':(store:appState),exists:(field:request_time),meta:(alias:!n,disabled:!f,index:'belle-net-cn-*',key:request_time,negate:!f,type:exists,value:exists)),('$state':(store:appState),meta:(alias:!n,disabled:!f,index:'belle-net-cn-*',key:host,negate:!f,type:phrase,value:hm-wms-rf.belle.net.cn),query:(match:(host:(query:hm-wms-rf.belle.net.cn,type:phrase)))),('$state':(store:appState),meta:(alias:!n,disabled:!f,index:'belle-net-cn-*',key:query,negate:!f,type:custom,value:'%7B%22range%22:%7B%22request_time%22:%7B%22gt%22:%222%22%7D%7D%7D'),query:(range:(request_time:(gt:'2'))))),index:'belle-net-cn-*',interval:auto,query:(match_all:()),sort:!('@timestamp',desc))
+```
+
 ## 参考资料
 
 [Install Elasticsearch with Docker](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html)

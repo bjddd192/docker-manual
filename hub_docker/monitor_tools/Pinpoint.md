@@ -157,3 +157,5 @@ Pinpoint Web会定期检查应用程序的状态，并在满足某些预配置�
 [pinpoint1.8.5安装及使用指南](https://www.cnblogs.com/luozhiyun/p/11664534.html)
 
 [Kubernetes 微服务全链路监控Pinpoint（APM）](https://www.liuyalei.top/1692.html)
+
+[Whether pinpoint provide public API?](https://github.com/naver/pinpoint/issues/3245)
