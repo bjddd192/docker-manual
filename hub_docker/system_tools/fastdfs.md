@@ -30,6 +30,7 @@ echo "Hello FastDFS!" > index.html
 fdfs_test /etc/fdfs/client.conf upload index.html
 # 获取返回的文件地址，并在浏览器访问，如：
 http://10.0.43.38:8080/group1/M00/00/00/CgArJlzOj7uAEBL_AAAAD1NdKGM56.html
+http://10.0.43.38:8080/group1/M00/00/00/CgArJl3CQjeAWZw3AAAADwuG_C053_big.html
 ```
 
 ## 参考资料
@@ -43,3 +44,5 @@ http://10.0.43.38:8080/group1/M00/00/00/CgArJlzOj7uAEBL_AAAAD1NdKGM56.html
 [FastDFS集群部署](https://www.cnblogs.com/cnmenglang/p/6731209.html)
 
 [FastDFS Java Client](https://cloud.tencent.com/developer/article/1407660)
+
+[FastDFS入门一篇就够](https://segmentfault.com/a/1190000018251300?utm_source=tag-newest)
