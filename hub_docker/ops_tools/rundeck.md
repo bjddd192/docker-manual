@@ -200,6 +200,14 @@ by:
   group: user
 ```
 
+## 下拉框调用远程API
+
+```sh
+# 格式如下：
+http://10.0.43.37:8000/api/k8s_app_deploy_config/?app_env=dev#timeout=60;contimeout=5;retry=3
+http://10.0.43.37:8000/api/k8s_app_deploy_config/?app_env=dev&app_namespace=${option.app_ns.value}#timeout=60;contimeout=5;retry=3
+```
+
 ## 参考资料
 
 [rundeck用户权限配置](https://blog.51cto.com/haoyonghui/2086774)
