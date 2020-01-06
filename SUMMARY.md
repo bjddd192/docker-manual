@@ -37,6 +37,8 @@
             * [redash](hub_docker/big_data/redash.md)
             * [metabase](hub_docker/big_data/metabase.md)
             * [zookeeper](hub_docker/big_data/zookeeper.md)
+        * BI工具
+            * [FineBI](hub_docker/bi_tools/FineBI.md)
     * docker 命令
         * [容器管理](command/container.md)
         * [镜像管理](command/image.md)
