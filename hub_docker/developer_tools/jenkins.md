@@ -1,5 +1,15 @@
 # jenkins
 
+[jenkins 官网](https://jenkins.io/zh/)
+
+[jenkins 中文社区](https://jenkins-zh.cn/)
+
+[jenkins 历史版本下载](http://mirrors.jenkins.io/)
+
+[jenkins LTS 变更日志](https://jenkins.io/zh/changelog-stable/)
+
+[jenkins plugins download](http://updates.jenkins-ci.org/download/plugins/)
+
 ## 官方镜像
 
 [Hub官方](https://hub.docker.com/r/jenkins/jenkins)
@@ -261,3 +271,60 @@ docker run --name jenkins -d -p 29999:8080 -p 5000:50000 --restart=always \
 ## 验证
 
 访问 url 如：http://serverIP:29999
+
+## 2.199版本安装
+
+```sh
+docker pull dockerhub.azk8s.cn/jenkins/jenkins:2.199-centos
+docker tag dockerhub.azk8s.cn/jenkins/jenkins:2.199-centos hub.wonhigh.cn/tools/jenkins:2.199-centos
+docker push hub.wonhigh.cn/tools/jenkins:2.199-centos
+
+docker stop jenkins && docker rm jenkins
+
+docker run --name jenkins -d -p 29999:8080 -p 50000:50000 --restart=always \
+  --memory 3G -u root \
+  -v /usr/local/bin/docker:/usr/local/bin/docker \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  hub.wonhigh.cn/tools/jenkins:2.199-centos
+
+# 拷贝出 /usr/share/jenkins 方便后续 jenkins 升级
+mkdir -p /data/docker_volumn/jenkins
+docker cp jenkins:/usr/share/jenkins /data/docker_volumn/jenkins/war
+docker cp jenkins:/var/jenkins_home /data/docker_volumn/jenkins/data
+
+# 修改 hudson.model.UpdateCenter.xml文件，或者界面设置插件更新地址：
+# http://mirrors.tuna.tsinghua.edu.cn/jenkins/updates/update-center.json 
+
+# 安装插件提速配置
+sed -i 's/http:\/\/updates.jenkins-ci.org\/download/https:\/\/mirrors.tuna.tsinghua.edu.cn\/jenkins/g' /data/docker_volumn/jenkins/data/updates/default.json 
+sed -i 's/http:\/\/www.google.com/https:\/\/www.baidu.com/g' /data/docker_volumn/jenkins/data/updates/default.json
+
+docker stop jenkins && docker rm jenkins
+
+docker run --name jenkins -d -p 29999:8080 -p 50000:50000 --restart=always \
+  --memory 3G -u root \
+  -e TZ=Asia/Shanghai \
+  -v /etc/localtime:/etc/localtime:ro \
+  -v /data/docker_volumn/jenkins/data:/var/jenkins_home \
+  -v /data/docker_volumn/jenkins/war:/usr/share/jenkins \
+  -v /usr/local/bin/docker:/usr/local/bin/docker \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  hub.wonhigh.cn/tools/jenkins:2.199-centos
+
+# 安装插件清单：
+# 语言包 - Localization: Chinese (Simplified)
+# git插件 - Git 、 Git client 、 Gitlab Hook 
+# ssh插件 - SSH 、 SSH Credentials 
+# email插件 - Email Extension 
+# 钉钉插件 - DingTalk 
+```
+
+## 参考资料
+
+[Jenkins 插件更新慢的问题](https://www.jianshu.com/p/5c6d0416bfc3)
+
+[Jenkins安装插件提速](Jenkins安装插件提速)
+
+[图文讲解jenkins的安装与配置---远程发布、自动监测代码更新](https://blog.csdn.net/zzq900503/article/details/41827481)
+
+[Jenkins构建完成自动发送邮件](https://blog.csdn.net/lht3347/article/details/84325326)
