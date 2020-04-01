@@ -42,6 +42,7 @@ docker cp jira:/opt/atlassian/jira /data/docker_volumn/jira/opt/atlassian
 
 docker run --name jira -d -p 18080:8080 --restart=always \
   --hostname sz19f-scm-jira \
+  --dns=10.0.43.19 \
   -u root \
   -e CATALINA_OPTS="-Xms2g -Xmx8g" \
   -v /data/docker_volumn/jira/var/atlassian/jira:/var/atlassian/jira \

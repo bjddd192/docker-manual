@@ -33,6 +33,7 @@ docker stats -a --format "table {{.Container}}\t{{.CPUPerc}}\t{{.MemUsage}}" --n
 
 # 解决 docker 终端宽度、高度显示不正确
 docker exec -it --env COLUMNS=`tput cols` --env LINES=`tput lines` your_container_name /bin/bash
+docker exec -it --env COLUMNS=200 --env LINES=200 your_container_name /bin/bash
 
 # 重命名容器
 docker rename youthful_minsky nginx

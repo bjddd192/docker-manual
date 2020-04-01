@@ -319,6 +319,27 @@ docker run --name jenkins -d -p 29999:8080 -p 50000:50000 --restart=always \
 # 钉钉插件 - DingTalk 
 ```
 
+## 配置 Android Sdk 环境
+
+[Android Studio](https://developer.android.com/studio/)
+
+[platform-tools](https://developer.android.com/studio/releases/platform-tools)
+
+```sh
+wget http://dl.google.com/android/android-sdk_r24.4.1-linux.tgz
+wget http://10.0.43.24:8066/package/android/android-sdk_r24.4.1-linux.tgz
+tar xzf android-sdk_r24.4.1-linux.tgz
+
+docker exec -it jenkins bash
+android -v list sdk
+echo y | android update sdk -u -a --filter 1,2,5,6,7,8
+echo y | android update sdk -u -a --filter tools,platform-tools,android-26,android-27,android-28,android-29,build-tools-28.0.3,build-tools-29.0.2
+```
+
+[nodejs 下载](https://npm.taobao.org/mirrors/node/)
+
+[gradle 下载](https://gradle.org/releases/)
+
 ## 参考资料
 
 [Jenkins 插件更新慢的问题](https://www.jianshu.com/p/5c6d0416bfc3)
@@ -328,3 +349,11 @@ docker run --name jenkins -d -p 29999:8080 -p 50000:50000 --restart=always \
 [图文讲解jenkins的安装与配置---远程发布、自动监测代码更新](https://blog.csdn.net/zzq900503/article/details/41827481)
 
 [Jenkins构建完成自动发送邮件](https://blog.csdn.net/lht3347/article/details/84325326)
+
+[Docker + Jenkins + Cordova建设移动端打包平台](https://www.jianshu.com/p/c50423a3f40f)
+
+[linux 安装 Android Sdk](https://www.jianshu.com/p/86b9c57bf838)
+
+[Android报错之.android/repositories.cfg could not be loaded.解决方案](https://blog.csdn.net/u010358168/article/details/84827249)
+
+[./sdkmanager --licenses Error: Unknown argument --licenses](https://blog.csdn.net/u010165147/article/details/82496617)

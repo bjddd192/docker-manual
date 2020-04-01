@@ -35,7 +35,12 @@
 
 2.运行docker时绑定hostdocker run --network host，通过ip route获取
 
+## Docker之 /etc/profile 不生效得问题
+
+我们启动服务后，发现配置在/etc/proifle得配置不生效，后来发现，容器里面执行命令，也没有生效，日了狗了，后来得解决方案，是将环境变量配置到 /root/.bashrc 这个里面 ，下次容器启动，环境变量也生效。
+
 ## 参考资料
 
 [理解 inode](http://www.ruanyifeng.com/blog/2011/12/inode.html)
 
+[docker重新进入容器时“/etc/profile”中环境变量失效问题的解决](https://blog.csdn.net/dongdong9223/article/details/81094657)
