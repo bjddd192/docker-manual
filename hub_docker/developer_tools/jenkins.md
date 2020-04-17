@@ -340,6 +340,17 @@ echo y | android update sdk -u -a --filter tools,platform-tools,android-26,andro
 
 [gradle 下载](https://gradle.org/releases/)
 
+## 课程资料
+
+课程PPT地址：
+
+链接:https://pan.baidu.com/s/1OSynEP3AUrjtq1BR2iZlLA  密码:azun  
+
+课程文档:
+https://github.com/zeyangli/jenkins_pipeline_docs.git  新版本文档【下载本地阅读更佳】[更新中]
+
+ http://zeyangli.github.io [视频中的旧版本文档]
+
 ## 参考资料
 
 [Jenkins 插件更新慢的问题](https://www.jianshu.com/p/5c6d0416bfc3)

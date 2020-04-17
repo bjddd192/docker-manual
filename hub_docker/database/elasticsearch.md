@@ -113,6 +113,50 @@ docker exec -it kibana /usr/share/kibana/bin/kibana-plugin install http://10.0.4
 docker restart kibana
 ```
 
+## 删除数据
+
+[Delete By Query API](https://www.elastic.co/guide/en/elasticsearch/reference/6.5/docs-delete-by-query.html)
+
+[Force merge API](https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-forcemerge.html#indices-forcemerge)
+
+[elasticsearch Delete （根据条件删除）](https://www.cnblogs.com/zhuyeshen/p/10950560.html)
+
+[ElasticSearch5.x 删除数据](https://cloud.tencent.com/developer/article/1350598)
+
+[探究 | Elasticsearch如何物理删除给定期限的历史数据？](https://developer.aliyun.com/article/707400)
+
+示例：
+
+```sh
+curl -X POST "http://172.17.209.53:9200/filebeat-*/_delete_by_query?conflicts=proceed" -H 'Content-Type: application/json' -d'
+{
+    "query": {
+        "bool": {
+            "must": [{
+                "match_all": {}
+            }, {
+                "match_phrase": {
+                    "kubernetes.container.name": {
+                        "query": "dev-ept-api"
+                    }
+                }
+            }, {
+                "range": {
+                    "@timestamp": {
+                        "lt": "now-5d",
+                        "format": "epoch_millis"
+                    }
+                }
+            }]
+        }
+    }
+}'
+
+# curl -X POST "http://10.250.23.14:9200/filebeat-6.5.4-2020.03.17/_forcemerge?max_num_segments=1" 
+```
+
+若数据量太大删除很慢，且不能及时释放磁盘空间，强制合并耗时更是吓人，尽量不用此方式。
+
 ## 参考资料
 
 [ELKstack 中文指南](https://elkguide.elasticsearch.cn/logstash/)
@@ -130,3 +174,4 @@ docker restart kibana
 [kibana Sentinl插件](https://www.geeklive.cn/2019/04/01/kibana-sentinl/undefined/kibana-sentinl/)
 
 [ES告警详解之Sentinl](https://www.tony-yin.site/2018/12/01/ES-Sentinl/)
+
