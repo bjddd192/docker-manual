@@ -340,6 +340,16 @@ echo y | android update sdk -u -a --filter tools,platform-tools,android-26,andro
 
 [gradle 下载](https://gradle.org/releases/)
 
+## jenkins slave
+
+[Hub官方](https://hub.docker.com/r/jenkins/jnlp-slave)
+
+```sh
+docker stop jenkins-slave && docker rm -f jenkins-slave
+
+docker run --name jenkins-slave -d --restart=always jenkins/jnlp-slave:3.35-5-alpine -url http://172.17.209.53:29999 -workDir="/home/jenkins/agent" 56d05e920629bc1224f284bc4492b8997502ebd53ad0cb67fc705d34954325b3 test
+```
+
 ## 课程资料
 
 课程PPT地址：
@@ -349,7 +359,9 @@ echo y | android update sdk -u -a --filter tools,platform-tools,android-26,andro
 课程文档:
 https://github.com/zeyangli/jenkins_pipeline_docs.git  新版本文档【下载本地阅读更佳】[更新中]
 
- http://zeyangli.github.io [视频中的旧版本文档]
+http://zeyangli.github.io [视频中的旧版本文档]
+ 
+[课程文档](http://119.3.228.122/jenkins/)
 
 ## 参考资料
 
@@ -368,3 +380,11 @@ https://github.com/zeyangli/jenkins_pipeline_docs.git  新版本文档【下载�
 [Android报错之.android/repositories.cfg could not be loaded.解决方案](https://blog.csdn.net/u010358168/article/details/84827249)
 
 [./sdkmanager --licenses Error: Unknown argument --licenses](https://blog.csdn.net/u010165147/article/details/82496617)
+
+[jenkins 如何在 k8s 集群中实现动态 agent](https://blog.51cto.com/wzlinux/2467307?source=drh)
+
+[动态 Jenkins Slave](https://www.qikqiak.com/k8s-book/docs/36.Jenkins%20Slave.html)
+
+[Jenkins master and slave with docker](https://medium.com/@prashant.vats/jenkins-master-and-slave-with-docker-b993dd031cbd)
+
+[在 Kubernetes 中通过 Jenkins 和 Dynamic Slaves 实现 CI/CD](https://laijingwu.com/440.html)
