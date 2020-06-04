@@ -113,6 +113,46 @@ docker exec -it kibana /usr/share/kibana/bin/kibana-plugin install http://10.0.4
 docker restart kibana
 ```
 
+## kibana 告警配置(5.6.9版本)
+
+```sh
+docker stop kibana && docker rm kibana
+
+docker run -d --name kibana -p 5601:5601 \
+-u root \
+-e ELASTICSEARCH_URL=http://10.250.11.105:9200 \
+-e KIBANA_INDEX=.kibana-11.74 \
+-e XPACK_GRAPH_ENABLED=false \
+-e XPACK_MONITORING_ENABLED=false \
+-e XPACK_REPORTING_ENABLED=false \
+-e XPACK_SECURITY_ENABLED=false \
+harbor.bjds.belle.lan/k8s/kibana:5.6.9 \
+/bin/bash -c 'bin/kibana-plugin remove x-pack ; /usr/local/bin/kibana-docker'
+
+# 持久化 kibana
+docker cp kibana:/usr/share/kibana /data/docker_volumn/kibana
+
+docker stop kibana && docker rm kibana
+
+docker run -d --name kibana -p 5601:5601 \
+-u root \
+-e ELASTICSEARCH_URL=http://10.250.11.105:9200 \
+-e KIBANA_INDEX=.kibana-11.74 \
+-e XPACK_GRAPH_ENABLED=false \
+-e XPACK_MONITORING_ENABLED=false \
+-e XPACK_REPORTING_ENABLED=false \
+-e XPACK_SECURITY_ENABLED=false \
+-v /data/docker_volumn/kibana:/usr/share/kibana \
+harbor.bjds.belle.lan/k8s/kibana:5.6.9 \
+/bin/bash -c 'bin/kibana-plugin remove x-pack ; /usr/local/bin/kibana-docker'
+
+# 安装 sentinl 告警插件
+docker exec -it kibana /usr/share/kibana/bin/kibana-plugin install http://10.0.43.24:8066/package/kibana/sentinl-v5.6.9.zip
+
+# 重启生效组件
+docker restart kibana
+```
+
 ## 删除数据
 
 [Delete By Query API](https://www.elastic.co/guide/en/elasticsearch/reference/6.5/docs-delete-by-query.html)

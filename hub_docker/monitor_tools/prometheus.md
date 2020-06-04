@@ -191,6 +191,8 @@ docker restart grafana
 
 [Prometheus一条告警是怎么触发的](https://www.jianshu.com/p/af0f98fe7699)
 
+[Prometheus AlertManager 实战](https://zhuanlan.zhihu.com/p/71922761)
+
 ```sh
 docker run -d --name alertmanager -p 9093:9093 --restart=always \
   prom/alertmanager:v0.20.0
@@ -203,7 +205,8 @@ vi /data/docker_volumn/alertmanager/alertmanager.yml
 
 docker stop alertmanager && docker rm -f alertmanager
 
-docker run -d --name alertmanager -p 9093:9093 --restart=always \
+docker run -d --name alertmanager -p 9093:9093 --hostname 10.250.15.39 --restart=always \
+  -e TZ=Asia/Shanghai \
   -v /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime:ro \
   -v /data/docker_volumn/alertmanager:/etc/alertmanager \
   prom/alertmanager:v0.20.0
@@ -237,6 +240,8 @@ vi /data/docker_volumn/prometheus-webhook-dingtalk/config.yml
 docker stop prometheus-webhook-dingtalk && docker rm -f prometheus-webhook-dingtalk
 
 docker run -d --name prometheus-webhook-dingtalk -p 8060:8060 --restart=always \
+  -e TZ=Asia/Shanghai \
+  -v /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime:ro \
   -v /data/docker_volumn/prometheus-webhook-dingtalk/config.yml:/etc/prometheus-webhook-dingtalk/config.yml  \
   -v /data/docker_volumn/prometheus-webhook-dingtalk/default.tmpl:/etc/prometheus-webhook-dingtalk/templates/default.tmpl \
   timonwong/prometheus-webhook-dingtalk:v1.4.0 \
