@@ -109,6 +109,8 @@ hub.wonhigh.cn/k8s/kibana:6.5.4
 # 安装 sentinl 告警插件
 docker exec -it kibana /usr/share/kibana/bin/kibana-plugin install http://10.0.43.24:8066/package/kibana/sentinl-v6.5.4.zip
 
+# vi /data/docker_volumn/kibana/config/kibana.yml
+
 # 重启生效组件
 docker restart kibana
 ```

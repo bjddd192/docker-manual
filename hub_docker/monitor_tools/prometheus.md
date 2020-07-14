@@ -70,13 +70,22 @@ curl -X POST http://10.250.15.39:9090/-/reload
 ```sh
 docker stop node-exporter && docker rm -f node-exporter
 
-docker run -d --name node-exporter -p 9100:9100 --restart=always \
+# prom/node-exporter:v0.18.1
+docker run -d --name node-exporter --net host --restart=always \
   -v /proc:/host/proc \
   -v /sys:/host/sys \
   -v /:/rootfs \
-  prom/node-exporter:v0.18.1 \
+  harbor.bjds.belle.lan/k8s/node-exporter:v0.18.1 \
   --path.procfs /host/proc --path.sysfs /host/sys \
   --collector.filesystem.ignored-mount-points "^/(sys|proc|dev|host|etc)($|/)"
+
+docker run -d --name node-exporter --net host --restart=always \
+    -v /proc:/host/proc \
+    -v /sys:/host/sys \
+    -v /:/rootfs \
+    prom/node-exporter:v0.18.1 \
+    --path.procfs /host/proc --path.sysfs /host/sys \
+    --collector.filesystem.ignored-mount-points "^/(sys|proc|dev|host|etc)($|/)"
 ```
 
 #### 参考资料
