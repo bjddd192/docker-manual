@@ -388,3 +388,5 @@ http://zeyangli.github.io [视频中的旧版本文档]
 [Jenkins master and slave with docker](https://medium.com/@prashant.vats/jenkins-master-and-slave-with-docker-b993dd031cbd)
 
 [在 Kubernetes 中通过 Jenkins 和 Dynamic Slaves 实现 CI/CD](https://laijingwu.com/440.html)
+
+[jenkins中文乱码与服务启动](http://yeshaoting.github.io/article/jenkins/jenkins%E4%B8%AD%E6%96%87%E4%B9%B1%E7%A0%81%E4%B8%8E%E6%9C%8D%E5%8A%A1%E5%90%AF%E5%8A%A8/)

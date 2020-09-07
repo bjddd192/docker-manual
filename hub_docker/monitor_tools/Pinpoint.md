@@ -87,7 +87,7 @@ cd /opt/hbase/hbase-1.2.6/bin
 > list
 > describe 'TraceV2'
 > disable 'TraceV2'
-> alter 'TraceV2' , {NAME=>'S',TTL=>'604800'}
+> alter 'TraceV2' , {NAME=>'S',TTL=>'2592000'}
 > enable 'TraceV2'
 > describe  'TraceV2'
 > major_compact  'TraceV2'

@@ -202,6 +202,8 @@ docker restart grafana
 
 [Prometheus AlertManager 实战](https://zhuanlan.zhihu.com/p/71922761)
 
+[Prometheus 监控k8s告警rules](http://idcsec.com/2019/03/06/prometheus-%E7%9B%91%E6%8E%A7k8s%E5%91%8A%E8%AD%A6rules/)
+
 ```sh
 docker run -d --name alertmanager -p 9093:9093 --restart=always \
   prom/alertmanager:v0.20.0

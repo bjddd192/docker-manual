@@ -136,6 +136,19 @@ docker exec -it kafka kafka-console-consumer.sh --bootstrap-server 10.0.43.19:90
 
 [wurstmeister/kafka](https://hub.docker.com/r/wurstmeister/kafka)
 
+### 实际操作
+
+```sh
+docker run -it --rm wurstmeister/kafka:2.11-1.1.1 bash
+
+kafka-topics.sh --list --zookeeper 10.234.8.41:2181,10.234.8.42:2181,10.234.8.43:2181 | grep wms_e_stk
+
+kafka-console-consumer.sh --bootstrap-server 10.234.8.41:9092,10.234.8.42:9092,10.234.8.43:9092 --topic wms_e_stk_syn_record --from-beginning
+
+kafka-console-producer.sh --broker-list 10.234.8.41:9092,10.234.8.42:9092,10.234.8.43:9092 --topic wms_e_stk_syn_record
+
+```
+
 ## 参考资料
 
 [Kafka初识](https://www.cnblogs.com/luotianshuai/p/5206662.html#autoid-0-0-0)

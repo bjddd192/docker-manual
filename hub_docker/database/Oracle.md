@@ -49,6 +49,39 @@ jdbc连接信息:
 jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=10.243.6.217)(PORT=1521)))(CONNECT_DATA=(SERVER = DEDICATED)(SERVICE_NAME=xe)))
 ```
 
+#### 国仓版本
+
+```sh
+docker run -itd --name oracle11204 -p 1521:1521 -p 222:22 -p 1158:1158 --restart=always \
+  -h oracle11204 --privileged=true \
+  hub.wonhigh.cn/tools/oracle_11g_ee_11.2.0.4:yangguocang init
+  
+# 进入容器
+docker exec -it oracle11204 bash
+
+# 启动数据库和监听
+su - oracle -c 'lsnrctl start'
+su - oracle -c 'echo "startup" | sqlplus / as sysdba'
+su - oracle -c 'emctl start dbconsole'
+
+# 目前数据持久化还有问题
+# mkdir -p /data/docker_volumn/oralce
+# docker cp oracle11204:/u01/app/oracle/oradata /data/docker_volumn/oralce/oradata
+
+# docker stop oracle11204 && docker rm oracle11204
+# 
+# docker run -d --name oracle11204 -p 1521:1521 -p 222:22 -p 1158:1158 --restart=always \
+#   -h oracle11204 --privileged=true \
+#   -v /data/docker_volumn/oralce/oradata:/u01/app/oracle/oradata \
+#   registry.cn-shenzhen.aliyuncs.com/yangguocang/oracle_11g_ee_11.2.0.4
+
+hostname: 10.243.6.217   
+port: 1521 
+sid: orcl 
+username: system    
+password: oracle   
+```
+
 ### 开启ssh
 
 ```sh
