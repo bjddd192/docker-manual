@@ -1,6 +1,6 @@
 # prometheus 监控
 
-## prometheus server
+### prometheus server
 
 [官网](https://prometheus.io/)
 
@@ -47,11 +47,11 @@ curl -X POST http://10.250.15.39:9090/-/reload
 # curl -XPOST http://localhost:9090/api/v1/admin/tsdb/clean_tombstones
 ```
 
-### 数据清理
+#### 数据清理
 
 [Prometheus 删除数据指标](https://www.qikqiak.com/post/prometheus-delete-metrics/)
 
-### 参考资料
+#### 参考资料
 
 [Prometheus 入门与实践](https://www.ibm.com/developerworks/cn/cloud/library/cl-lo-prometheus-getting-started-and-practice/index.html)
 
@@ -59,11 +59,11 @@ curl -X POST http://10.250.15.39:9090/-/reload
 
 [Prometheus搭建部署及官网翻译](http://www.51niux.com/?id=244)
 
-## 收集器 exporter
+### 收集器 exporter
 
 [prometheus数据采集exporter全家桶](https://blog.51cto.com/13053917/2374734)
 
-### node-exporter
+#### node-exporter
 
 [hub官方](https://hub.docker.com/r/prom/node-exporter)
 
@@ -88,11 +88,11 @@ docker run -d --name node-exporter --net host --restart=always \
     --collector.filesystem.ignored-mount-points "^/(sys|proc|dev|host|etc)($|/)"
 ```
 
-#### 参考资料
+##### 参考资料
 
 [Prometheus Node_Exporter监控主机性能展示Grafana](http://www.idcsec.com/2018/12/29/Prometheus-Node-Exporter%E7%9B%91%E6%8E%A7%E4%B8%BB%E6%9C%BA%E6%80%A7%E8%83%BD%E5%B1%95%E7%A4%BAGrafana/)
 
-### blackbox-exporter
+#### blackbox-exporter
 
 blackbox_exporter 是用来监控http, tcp, dns, icmp协议的工具。
 
@@ -120,7 +120,7 @@ docker run -d --name blackbox-exporter -p 9115:9115 --restart=always \
 # http://172.17.209.202:9115/probe?module=ping&target=172.17.209.53
 ```
 
-#### 参考资料
+##### 参考资料
 
 [prometheus的黑盒监控](https://zhangguanzhang.github.io/2018/12/04/black-box-exporter/)
 
@@ -136,7 +136,7 @@ docker run -d --name blackbox-exporter -p 9115:9115 --restart=always \
 
 [blackbox_exporter/example.yml](https://github.com/prometheus/blackbox_exporter/blob/master/example.yml)
 
-## 数据看板 grafana
+### 数据看板 grafana
 
 [官网](https://grafana.com/)
 
@@ -172,11 +172,11 @@ docker restart grafana
 - node-exporter 看板ID： https://grafana.com/grafana/dashboards/8919
 - blackbox_exporter 看板ID： 
 
-### 优质看板
+#### 优质看板
 
 [NGINX Ingress controller](https://grafana.com/grafana/dashboards/9614)
 
-### 参考资料
+#### 参考资料
 
 [徒手教你制作运维监控大屏](https://www.cnblogs.com/zhangs1986/p/11180694.html)
 
@@ -188,7 +188,7 @@ docker restart grafana
 
 [Prometheus 查询语言](https://www.jianshu.com/p/3bdc4cfa08da)
 
-## 告警 alertmanager
+### 告警 alertmanager
 
 [github](https://github.com/prometheus/alertmanager)
 
@@ -228,7 +228,7 @@ vi /data/docker_volumn/prometheus/prometheus.yml
 docker restart prometheus
 ```
 
-### 告警规则配置
+#### 告警规则配置
 
 ```sh
 mkdir /data/docker_volumn/prometheus/rules
@@ -272,21 +272,23 @@ curl 'https://oapi.dingtalk.com/robot/send?access_token=xxxxxxxxxxxx' \
     }'
 ```
 
-### 告警模版
+#### 告警模版
 
 在 promethues-webhook-dingtalk 配置 markdown 模版。
 
-## 监控思路
+### 监控思路
 
 [监控之我见](https://github.com/xiaoping378/blog/blob/master/posts/%E7%9B%91%E6%8E%A7%E4%B9%8B%E6%88%91%E8%A7%81.md#%E7%BD%91%E7%BB%9C%E7%9B%91%E6%8E%A7)
 
 [IDC网络质量监控之（九）数据展示与告警篇(安装并调试prometheus_alertmanager+grafana+dingtlak)](https://boke.wsfnk.com/archives/905.html)
 
-## 其他监控方案
+### 其他监控方案
 
 [smokeping+prometheus+grafana](https://github.com/wilsonchai8/idc_ping_monitor)
 
+[Prometheus + Clickhouse + Grafana 架构安装](https://www.jianshu.com/p/4f3c6bbbbfa9)
 
 http://172.17.209.202:3000/
 http://10.0.43.32:9100/
 http://172.17.209.202:9090/
+

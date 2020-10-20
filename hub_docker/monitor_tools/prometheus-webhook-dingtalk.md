@@ -1,4 +1,4 @@
-# Pinpoint
+# prometheus-webhook-dingtalk
 
 Generating DingTalk notification from Prometheus AlertManager WebHooks.
 
@@ -6,7 +6,7 @@ Generating DingTalk notification from Prometheus AlertManager WebHooks.
 
 [Hub官方](https://hub.docker.com/r/timonwong/prometheus-webhook-dingtalk)
 
-## 容器化安装
+### 容器化安装
 
 ```sh
 mkdir -p /data/docker_volumn/prometheus-webhook-dingtalk
@@ -72,7 +72,7 @@ curl 'https://oapi.dingtalk.com/robot/send?access_token=xxxxxxxxxxxx' \
       }'
 
 
-## 参考资料
+### 参考资料
 
 [prometheus-operator自定义配置实践详解](https://blog.csdn.net/fanren224/article/details/73090082/)
 
