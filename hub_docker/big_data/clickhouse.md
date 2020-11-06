@@ -77,6 +77,29 @@ SHOW DATABASES
 │ default │
 │ system  │
 └─────────┘
+
+# 容器内安装工具软件
+tee /etc/apt/sources.list <<-'EOF'
+# ubuntu18.04(bionic) 配置阿里数据源
+
+deb http://mirrors.aliyun.com/ubuntu/ bionic main restricted universe multiverse
+deb-src http://mirrors.aliyun.com/ubuntu/ bionic main restricted universe multiverse
+
+deb http://mirrors.aliyun.com/ubuntu/ bionic-security main restricted universe multiverse
+deb-src http://mirrors.aliyun.com/ubuntu/ bionic-security main restricted universe multiverse
+
+deb http://mirrors.aliyun.com/ubuntu/ bionic-updates main restricted universe multiverse
+deb-src http://mirrors.aliyun.com/ubuntu/ bionic-updates main restricted universe multiverse
+
+deb http://mirrors.aliyun.com/ubuntu/ bionic-proposed main restricted universe multiverse
+deb-src http://mirrors.aliyun.com/ubuntu/ bionic-proposed main restricted universe multiverse
+
+deb http://mirrors.aliyun.com/ubuntu/ bionic-backports main restricted universe multiverse
+deb-src http://mirrors.aliyun.com/ubuntu/ bionic-backports main restricted universe multiverse
+EOF
+
+apt-get update
+apt-get install -y net-tools inetutils-ping telnet
 ```
 
 #### docker-compoese集群部署
@@ -235,7 +258,7 @@ clickhouse-client --query "SELECT COUNT(*) FROM tutorial.visits_v1"
 
 #### 数据库操作
 
-```sql
+```mysql
 docker exec -it --env COLUMNS=200 --env LINES=200 clickhouse-server bash
 
 -- 创建数据库
@@ -609,7 +632,7 @@ SELECT now() as current_date_time, current_date_time + INTERVAL 4 DAY
 
 #### 数据库定义
 
-```sql
+```mysql
 -- 创建一个默认引擎数据库
 CREATE DATABASE IF NOT EXISTS tutorial;
 
@@ -619,7 +642,7 @@ CREATE DATABASE IF NOT EXISTS db_test ENGINE = MySQL('10.0.30.39:3306', 'test', 
 
 #### 基础表定义
 
-```sql
+```mysql
 CREATE table tutorial.bm_size as db_test.bm_size;
 
 -- 快速复制一个表
@@ -694,7 +717,7 @@ DROP TABLE tutorial.bm_size;
 
 临时表只在会话范围有效，不属于任何数据库，主要用于集群间数据传播。
 
-```sql
+```mysql
 -- 尺码资料临时表
 -- DROP TABLE IF EXISTS tmp_bm_size;
 CREATE TEMPORARY TABLE IF NOT EXISTS tmp_bm_size (
@@ -715,7 +738,7 @@ CREATE TEMPORARY TABLE IF NOT EXISTS tmp_bm_size (
 
 #### 视图定义
 
-```sql
+```mysql
 -- 普通视图
 -- DROP TABLE IF EXISTS tutorial.v_bm_size;
 CREATE VIEW IF NOT EXISTS tutorial.v_bm_size
@@ -741,17 +764,202 @@ SELECT * FROM tutorial.bm_size;
 -- 物化视图是使用了 .inner 特殊前缀的数据表。
 ```
 
-
-
 #### 分区表定义
+
+```mysql
+-- 采购订单主表(分区表)
+-- DROP TABLE tutorial.bl_po;
+CREATE TABLE IF NOT EXISTS tutorial.bl_po (
+ `id` Int64 COMMENT '采购订单主表-主键ID',
+ `company_id` Int64 COMMENT '租赁公司ID(SAAS预留字段)',
+ `bill_no` String COMMENT '单据编号',
+ `status` String COMMENT '单据状态(10=制单 15=提交 20=审核 30=确认 99=取消 100=完结)',
+ `creator` String COMMENT '创建人',
+ `create_time` DateTime COMMENT '创建时间',
+ `modifier` Nullable(String) COMMENT '修改人',
+ `modify_time` Nullable(DateTime) COMMENT '修改时间',
+ `auditor` Nullable(String) COMMENT '审核人',
+ `audit_time` Nullable(DateTime) COMMENT '审核时间',
+ `remarks` Nullable(String) COMMENT '备注',
+ `update_time` DateTime COMMENT '记录更新时间'
+) ENGINE = MergeTree()
+PARTITION BY toYYYYMM(create_time)
+PRIMARY KEY bill_no
+ORDER BY bill_no;
+
+INSERT INTO tutorial.bl_po
+(id, company_id, bill_no, status, creator, create_time, modifier, modify_time, auditor, audit_time, remarks, update_time)
+VALUES
+(1, 1, 'P20201102001', '99', '阳磊', '2020-11-02 12:12:12', Null, Null, '系统管理员', '2020-11-02 12:12:12', '', '2020-11-02 12:12:12');
+
+INSERT INTO tutorial.bl_po
+(id, company_id, bill_no, status, creator, create_time, modifier, modify_time, auditor, audit_time, remarks, update_time)
+VALUES
+(2, 1, 'P20201004001', '99', '阳磊', '2020-10-04 12:12:12', Null, Null, '系统管理员', '2020-10-04 12:12:12', '', '2020-10-04 12:12:12');
+
+INSERT INTO tutorial.bl_po
+(id, company_id, bill_no, status, creator, create_time, modifier, modify_time, auditor, audit_time, remarks, update_time)
+VALUES
+(3, 1, 'P20201103001', '99', '阳磊', '2020-11-03 12:12:12', Null, Null, '系统管理员', '2020-11-03 12:12:12', '', '2020-11-03 12:12:12');
+
+-- 查询分区信息
+SELECT database,table,partition_id,name,path
+FROM system.parts p 
+where database = 'tutorial' and table = 'bl_po';
+
+-- 查询数据
+SELECT * 
+FROM tutorial.bl_po
+where create_time > '2020-11-01 00:00:00';
+
+-- 删除分区(会物理删除分区文件)
+ALTER table tutorial.bl_po DROP PARTITION 202011;
+
+-- 批量插入数据(只会产生一个物理文件目录)
+INSERT INTO tutorial.bl_po
+(id, company_id, bill_no, status, creator, create_time, modifier, modify_time, auditor, audit_time, remarks, update_time)
+VALUES
+(1, 1, 'P20201102001', '99', '阳磊', '2020-11-02 12:12:12', Null, Null, '系统管理员', '2020-11-02 12:12:12', '', '2020-11-02 12:12:12'),
+(3, 1, 'P20201103001', '99', '阳磊', '2020-11-03 12:12:12', Null, Null, '系统管理员', '2020-11-03 12:12:12', '', '2020-11-03 12:12:12');
+
+-- 复制分区表
+CREATE table tutorial.bak_bl_po as tutorial.bl_po ENGINE = MergeTree() PARTITION BY toYYYYMM(create_time) ORDER BY bill_no;
+
+-- 复制分区数据
+alter table tutorial.bak_bl_po replace PARTITION 202011 from tutorial.bl_po;
+
+-- 重置分区列数据
+alter table tutorial.bak_bl_po clear column auditor in PARTITION 202011;
+
+-- 卸载分区(文件未删除，被移动到 detached 文件夹)
+alter table tutorial.bak_bl_po detach PARTITION 202011;
+
+-- 装载分区
+alter table tutorial.bak_bl_po attach PARTITION 202011;
+
+-- 分区的备份与还原(后续学习...)
+```
+
+#### 副本表定义
+
+```mysql
+-- 采购订单主表(含副本的分区表-副本1)
+-- DROP TABLE default.bl_po;
+CREATE TABLE IF NOT EXISTS default.bl_po (
+ `id` Int64 COMMENT '采购订单主表-主键ID',
+ `company_id` Int64 COMMENT '租赁公司ID(SAAS预留字段)',
+ `bill_no` String COMMENT '单据编号',
+ `status` String COMMENT '单据状态(10=制单 15=提交 20=审核 30=确认 99=取消 100=完结)',
+ `creator` String COMMENT '创建人',
+ `create_time` DateTime COMMENT '创建时间',
+ `modifier` Nullable(String) COMMENT '修改人',
+ `modify_time` Nullable(DateTime) COMMENT '修改时间',
+ `auditor` Nullable(String) COMMENT '审核人',
+ `audit_time` Nullable(DateTime) COMMENT '审核时间',
+ `remarks` Nullable(String) COMMENT '备注',
+ `update_time` DateTime COMMENT '记录更新时间'
+) ENGINE = ReplicatedMergeTree('/clickhouse/tables/shard01/bl_po','cluster_chs01-01-1')
+PARTITION BY toYYYYMM(create_time)
+PRIMARY KEY bill_no
+ORDER BY bill_no;
+
+-- 采购订单主表(含副本的分区表-副本2)
+-- DROP TABLE default.bl_po;
+CREATE TABLE IF NOT EXISTS default.bl_po (
+ `id` Int64 COMMENT '采购订单主表-主键ID',
+ `company_id` Int64 COMMENT '租赁公司ID(SAAS预留字段)',
+ `bill_no` String COMMENT '单据编号',
+ `status` String COMMENT '单据状态(10=制单 15=提交 20=审核 30=确认 99=取消 100=完结)',
+ `creator` String COMMENT '创建人',
+ `create_time` DateTime COMMENT '创建时间',
+ `modifier` Nullable(String) COMMENT '修改人',
+ `modify_time` Nullable(DateTime) COMMENT '修改时间',
+ `auditor` Nullable(String) COMMENT '审核人',
+ `audit_time` Nullable(DateTime) COMMENT '审核时间',
+ `remarks` Nullable(String) COMMENT '备注',
+ `update_time` DateTime COMMENT '记录更新时间'
+) ENGINE = ReplicatedMergeTree('/clickhouse/tables/shard01/bl_po','cluster_chs01-01-2')
+PARTITION BY toYYYYMM(create_time)
+PRIMARY KEY bill_no
+ORDER BY bill_no;
+
+-- 查询 zookeeper 代理表(使用 SQL 的方式读取远端 zookeeper 内的数据)
+SELECT * FROM system.zookeeper WHERE path = '/';
+SELECT * FROM system.zookeeper WHERE path = '/clickhouse';
+SELECT * FROM system.zookeeper WHERE path = '/clickhouse/tables/shard01';
+SELECT * FROM system.zookeeper WHERE path = '/clickhouse/tables/shard01/bl_po';
+SELECT * FROM system.zookeeper WHERE path = '/clickhouse/tables/shard01/bl_po/leader_election';
+
+-- 在任意副本节点插入数据，发现其他的副本节点也会复制一份
+```
 
 #### 分片表定义
 
+```mysql
+-- 采购订单主表(集群表)
+-- DROP TABLE IF EXISTS default.bl_po ON CLUSTER cluster_chs01;
+CREATE TABLE IF NOT EXISTS default.bl_po ON CLUSTER cluster_chs01 (
+ `id` Int64 COMMENT '采购订单主表-主键ID',
+ `company_id` Int64 COMMENT '租赁公司ID(SAAS预留字段)',
+ `bill_no` String COMMENT '单据编号',
+ `status` String COMMENT '单据状态(10=制单 15=提交 20=审核 30=确认 99=取消 100=完结)',
+ `creator` String COMMENT '创建人',
+ `create_time` DateTime COMMENT '创建时间',
+ `modifier` Nullable(String) COMMENT '修改人',
+ `modify_time` Nullable(DateTime) COMMENT '修改时间',
+ `auditor` Nullable(String) COMMENT '审核人',
+ `audit_time` Nullable(DateTime) COMMENT '审核时间',
+ `remarks` Nullable(String) COMMENT '备注',
+ `update_time` DateTime COMMENT '记录更新时间'
+) ENGINE = ReplicatedMergeTree('/clickhouse/tables/{shard}/bl_po','{replica}')
+PARTITION BY toYYYYMM(create_time)
+PRIMARY KEY bill_no
+ORDER BY bill_no;
+
+-- 采购订单主表(分片表)
+-- DROP TABLE IF EXISTS default.bl_po_all ON CLUSTER cluster_chs01;
+CREATE TABLE IF NOT EXISTS default.bl_po_all ON CLUSTER cluster_chs01 (
+ `id` Int64 COMMENT '采购订单主表-主键ID',
+ `company_id` Int64 COMMENT '租赁公司ID(SAAS预留字段)',
+ `bill_no` String COMMENT '单据编号',
+ `status` String COMMENT '单据状态(10=制单 15=提交 20=审核 30=确认 99=取消 100=完结)',
+ `creator` String COMMENT '创建人',
+ `create_time` DateTime COMMENT '创建时间',
+ `modifier` Nullable(String) COMMENT '修改人',
+ `modify_time` Nullable(DateTime) COMMENT '修改时间',
+ `auditor` Nullable(String) COMMENT '审核人',
+ `audit_time` Nullable(DateTime) COMMENT '审核时间',
+ `remarks` Nullable(String) COMMENT '备注',
+ `update_time` DateTime COMMENT '记录更新时间'
+) ENGINE = Distributed(cluster_chs01, default, bl_po, rand());
+
+-- 查询数据
+SELECT * FROM default.bl_po_all;
+```
+
 ### DML
 
-```sql
-INSERT INTO `tutorial`.`bm_size`(`id`, `company_id`, `size_no`, `size_code`, `size_name`, `owner_no`, `order_no`, `creator`, `create_time`, `modifier`, `modify_time`, `remarks`, `update_time`) VALUES (581, 1, '20220', '20220', '22.0cm', 'BL', 1, '系统管理员', '2019-03-12 12:12:12', NULL, NULL, NULL, '2019-04-25 10:24:27');
-INSERT INTO `tutorial`.`bm_size`(`id`, `company_id`, `size_no`, `size_code`, `size_name`, `owner_no`, `order_no`, `creator`, `create_time`, `modifier`, `modify_time`, `remarks`, `update_time`) VALUES (582, 1, '20225', '20225', '22.5cm', 'BL', 1, '系统管理员', '2019-03-12 12:12:12', NULL, NULL, NULL, '2019-04-25 10:24:27');
+```mysql
+-- 插入数据
+INSERT INTO `tutorial`.`bm_size`
+(`id`, `company_id`, `size_no`, `size_code`, `size_name`, `owner_no`, `order_no`, `creator`, `create_time`, `modifier`, `modify_time`, `remarks`, `update_time`) 
+VALUES 
+(581, 1, '20220', '20220', '22.0cm', 'BL', 1, '系统管理员', '2019-03-12 12:12:12', NULL, NULL, NULL, '2019-04-25 10:24:27');
+INSERT INTO `tutorial`.`bm_size`
+(`id`, `company_id`, `size_no`, `size_code`, `size_name`, `owner_no`, `order_no`, `creator`, `create_time`, `modifier`, `modify_time`, `remarks`, `update_time`) 
+VALUES 
+(582, 1, '20225', '20225', '22.5cm', 'BL', 1, '系统管理员', '2019-03-12 12:12:12', NULL, NULL, NULL, '2019-04-25 10:24:27');
+
+INSERT INTO `tutorial`.`bm_size`
+(`id`, `company_id`, `size_no`, `size_code`, `size_name`, `owner_no`, `order_no`, `creator`, `create_time`,  `update_time`) 
+FROM CSV \
+'583', '1', '20230', '20230', '23.0cm', 'BL', '1', '系统管理员', '2019-03-12 12:12:12', '2019-04-25 10:24:27';
+
+INSERT INTO `tutorial`.`bm_size`
+(`id`, `company_id`, `size_no`, `size_code`, `size_name`, `owner_no`, `order_no`, `creator`, `create_time`,  `update_time`) 
+FORMAT CSV 
+'584', '1', '20235', '20235', '23.5cm', 'BL', '1', '系统管理员', '2019-03-12 12:12:12', '2019-04-25 10:24:27'
+'585', '1', '20240', '20240', '24.0cm', 'BL', '1', '系统管理员', '2019-03-12 12:12:12', '2019-04-25 10:24:27';
 
 insert into `tmp_bm_size` 
 (
@@ -760,11 +968,41 @@ insert into `tmp_bm_size`
 select 
 `id`, `company_id`, `size_no`, `size_code`, `size_name`, `owner_no`, `creator`, `create_time`, `modifier`, `modify_time`, `remarks`, `update_time`
 from `tutorial`.`bm_size`;
+
+-- 删除数据(不支持事务，实际是通过异步执行的)
+alter table tutorial.bak_bl_po delete where id = 3;
 ```
 
-
-
 ### 数据库管理
+
+```mysql
+-- 整理表
+optimize table default.bl_po;
+
+-- 查看集群信息
+SELECT * FROM system.clusters;
+
+-- 查看宏定义
+SELECT * FROM system.macros;
+
+-- 查看 clickhouse 的性能指标
+SELECT * FROM system.metrics;
+SELECT * FROM system.events;
+SELECT * FROM system.asynchronous_metrics;
+
+-- 查看用户的查询日志(默认关闭，需要开启)
+SELECT * FROM system.query_log;
+
+-- 数据导出文件备份(适合数据体量较小的表)
+clickhouse-client --user=user_readonly --password=user_readonly --query="select * from bl_po_all" > bl_po_all.tsv
+-- 备份数据导入
+cat bl_po_all.tsv | clickhouse-client --user=user_readonly --password=user_readonly --query="insert into bl_po_all FORMAT TSV" --max_insert_block_size=100000
+
+-- 冷备份(拷贝数据文件目录，适合大批量的数据备份)
+
+-- 通过快照表备份(通过远程查询方式)
+SELECT * FROM remote('172.17.209.53:61012','default','bl_po','user_readonly','user_readonly');
+```
 
 ### 注意事项与要求
 
@@ -772,11 +1010,19 @@ from `tutorial`.`bm_size`;
 
 避免使用 select *
 
+### 问题记录
 
+[ClickHouse删除数据之后再插入数据成功无报错但是查询不到数据](https://blog.csdn.net/qq_40341628/article/details/109388455?utm_medium=distribute.pc_relevant.none-task-blog-title-3&spm=1001.2101.3001.4242)
+
+[Dberver 连接 ClickHouse:Cannot modify max_result_rows setting in readonly mode](https://blog.csdn.net/qq_18769269/article/details/106917575)
 
 ### 参考资料
 
 [clickhouse/yyoc97的专栏](https://blog.csdn.net/yyoc97/category_9053674.html)
+
+[clickhouse/DBArtist的专栏](https://www.cnblogs.com/DBArtist/category/1835494.html)
+
+[zk集群和clickhouse集群搭建](https://blog.csdn.net/qq_25864747/article/details/91997169)
 
 [Clickhouse集群扩容收缩](https://aop.pub/artical/database/clickhouse/cluster-scale/)
 
