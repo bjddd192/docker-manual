@@ -25,9 +25,7 @@ wget https://repo.yandex.ru/clickhouse/rpm/lts/x86_64/clickhouse-server-20.3.19.
 wget https://repo.yandex.ru/clickhouse/rpm/lts/x86_64/clickhouse-common-static-dbg-20.3.19.4-2.x86_64.rpm
 ```
 
-
-
-#### CentOS
+#### CentOS部署
 
 ```sh
 sudo yum install yum-utils
@@ -114,7 +112,7 @@ docker-compose up -d chs01011 chs01012 chs01021 chs01022
 
 # 查看集群状态
 SELECT *
-FROM system.clusters
+FROM system.clusters;
 
 ┌─cluster───────┬─shard_num─┬─shard_weight─┬─replica_num─┬─host_name─┬─host_address──┬─port─┬─is_local─┬
 │ cluster_chs01 │         1 │            1 │           1 │ chs01011  │ 192.168.150.5 │ 9000 │        0 │
@@ -143,8 +141,6 @@ PASSWORD=$(base64 < /dev/urandom | head -c8); echo "$PASSWORD"; echo -n "$PASSWO
 # generate double SHA1
 PASSWORD=$(base64 < /dev/urandom | head -c8); echo "$PASSWORD"; echo -n "$PASSWORD" | sha1sum | tr -d '-' | xxd -r -p | sha1sum | tr -d '-'
 ```
-
-
 
 ### 客户端连接工具
 
@@ -187,6 +183,8 @@ ClickHouse是一个用于联机分析(OLAP)的列式数据库管理系统(DBMS)�
 吞吐量可以使用每秒处理的行数或每秒处理的字节数来衡量。
 
 单个服务器上建议每秒最多查询100次。
+
+ClickHouse原理解析与应用实践
 
 #### ClickHouse的独特功能
 
@@ -244,15 +242,6 @@ clickhouse-client --query "SELECT COUNT(*) FROM tutorial.hits_v1"
 clickhouse-client --query "OPTIMIZE TABLE tutorial.visits_v1 FINAL"
 clickhouse-client --query "SELECT COUNT(*) FROM tutorial.visits_v1"
 ```
-
-#### 表引擎
-
-|  引擎类型   | 特点                                                         |
-| :---------: | ------------------------------------------------------------ |
-|  MergeTree  | 适用于高负载任务的最通用和功能最强大的表引擎。这些引擎的共同特点是可以快速插入数据并进行后续的后台数据处理。 MergeTree系列引擎支持数据复制，分区和一些其他引擎不支持的其他功能。<br />存储的数据按主键排序。<br />允许使用分区。<br />支持数据副本。<br />支持数据采样。 |
-|     Log     | 具有最小功能的[轻量级引擎](https://clickhouse.tech/docs/v20.3/zh/operations/table_engines/log_family/)。当您需要快速写入许多小表（最多约100万行）并在以后整体读取它们时，该类型的引擎是最有效的。 |
-| Intergation | 用于与其他的数据存储与处理系统集成的引擎。                   |
-|             |                                                              |
 
 
 
@@ -628,6 +617,34 @@ SELECT generateUUIDv4()
 SELECT now() as current_date_time, current_date_time + INTERVAL 4 DAY
 ```
 
+#### ClickHouse原理解析与应用实践
+
+[演示代码与样例数据](https://github.com/nauu/clickhousebook)
+
+### 表引擎
+
+|  引擎类型   | 特点                                                         |
+| :---------: | ------------------------------------------------------------ |
+|  MergeTree  | 适用于高负载任务的最通用和功能最强大的表引擎。这些引擎的共同特点是可以快速插入数据并进行后续的后台数据处理。 MergeTree系列引擎支持数据复制，分区和一些其他引擎不支持的其他功能。<br />存储的数据按主键排序。<br />允许使用分区。<br />支持数据副本。<br />支持数据采样。 |
+|     Log     | 具有最小功能的[轻量级引擎](https://clickhouse.tech/docs/v20.3/zh/operations/table_engines/log_family/)。当您需要快速写入许多小表（最多约100万行）并在以后整体读取它们时，该类型的引擎是最有效的。 |
+| Intergation | 用于与其他的数据存储与处理系统集成的引擎。                   |
+|             |                                                              |
+
+#### 文件引擎
+
+```sh
+tee /var/lib/clickhouse/user_files/test.csv <<-'EOF'
+1,2,3
+3,2,1
+78,43,45
+EOF
+
+clickhouse-client -m -q "
+SELECT *
+FROM file('/var/lib/clickhouse/user_files/test.csv', 'CSV', 'c1 UInt32, c2 UInt32, c3 UInt32')
+LIMIT 2;"
+```
+
 ### DDL
 
 #### 数据库定义
@@ -973,6 +990,485 @@ from `tutorial`.`bm_size`;
 alter table tutorial.bak_bl_po delete where id = 3;
 ```
 
+### DQL
+
+```mysql
+-- with子句(定义变量)
+WITH 
+	10 AS start,
+	100 AS abc
+SELECT number, number + abc
+FROM system.numbers
+WHERE number > start 
+LIMIT 5;
+
+-- 查看数据库占用空间大小
+-- with子句(调用函数，重复的函数可以简化)
+WITH SUM(c.data_uncompressed_bytes) AS bytes
+SELECT c.database, formatReadableSize(bytes) AS disk_size
+FROM system.columns c
+GROUP BY c.database 
+ORDER BY bytes DESC;
+
+-- 查看数据库占用空间占比
+-- with子句(定义子查询，注意：只能返回一行数据)
+WITH 
+(
+	SELECT SUM(data_uncompressed_bytes) AS bytes FROM system.columns 
+)
+AS total_bytes,
+SUM(c.data_uncompressed_bytes) AS bytes
+SELECT c.database, round(bytes/total_bytes*100,2) AS disk_usage
+FROM system.columns c
+GROUP BY c.database 
+ORDER BY disk_usage DESC;
+
+-- 嵌套with
+WITH round(disk_usage,2) AS disk_usage_rate
+SELECT 
+	database, disk_usage_rate
+FROM 
+(
+	WITH 
+	(
+		SELECT SUM(data_uncompressed_bytes) AS bytes FROM system.columns 
+	)
+	AS total_bytes,
+	SUM(c.data_uncompressed_bytes) AS bytes
+	SELECT c.database, bytes/total_bytes*100 AS disk_usage
+	FROM system.columns c
+	GROUP BY c.database 
+	ORDER BY disk_usage DESC
+);
+
+-- 生成序号
+SELECT * FROM numbers(10);
+SELECT * FROM numbers(100, 10);
+SELECT * FROM system.numbers LIMIT 1,10;
+
+-- 生成随机数(可用于造数据)
+SELECT * 
+FROM generateRandom('col_1 Array(Int8), col_2 String, col_3 Tuple(Decimal32(4)), col_4 DateTime', 1, 10, 3)
+limit 20;
+```
+
+### 函数
+
+#### 算术函数
+
+```mysql
+SELECT toTypeName(0), toTypeName(0 + 0), toTypeName(0 + 0 + 0), toTypeName(0 + 0 + 0 + 0);
+
+-- 加、减、乘、除、取模
+select 
+	100+200,200-100,200*100,200/11,200%11;
+select 
+	plus(200,100),minus(200,100),multiply(200,100),divide(200,11),modulo(200,11);
+-- 整除向下取整
+select 
+	intDiv(200,11),intDivOrZero(200,11),intDivOrZero(200,0),moduloOrZero(200,0);
+-- 取反、绝对值、最大公约数、最小公倍数
+select 
+	100,negate(-100),-100,negate(100),abs(-100),gcd(98,63),lcm(98,63);
+-- 时间运算(在Date的情况下，和整数相加整数意味着添加相应的天数；对于DateTime，这意味着添加相应的秒数。)
+SELECT 
+	now(),now()+1,today(),today()+1;
+-- 获取2个值的最小、最大值
+SELECT 
+	least(100, 200),greatest(100, 200);
+-- 取整函数	
+SELECT 
+	floor(3.5),
+	ceil(3.2),
+	round(3.1415,2);
+-- 随机函数
+SELECT 
+	rand(),rand64(),randConstant();
+```
+
+#### 类型转换行数
+
+```mysql
+SELECT 
+	toInt8('32'),toInt16('255'),toInt32('65535'),toInt64('1000000000');
+
+SELECT 
+	toInt32('65535'),toInt32OrZero('65535a'),toInt32OrNull('65535a');
+
+SELECT 
+	toDecimal64('655.3535',4),toDecimal64OrZero('655.3535a',5),toDecimal64OrNull('655.3535a',5);
+
+SELECT 
+	toDate('2020-2-28'),toDateOrZero('2020-2-301'),toDateOrNull('2020-2-30d');
+
+SELECT 
+	now(),toString(now()),toString(now(),'Asia/Shanghai')
+
+SELECT 
+	'2016-06-15 23:00:00' AS timestamp,
+	CAST(timestamp AS DateTime) AS datetime,
+	CAST(timestamp AS Date) AS date,
+	CAST(timestamp, 'String') AS string,
+	CAST(timestamp, 'FixedString(22)') AS fixed_string;
+```
+
+#### 字符串函数
+
+```mysql
+SELECT 
+	toFixedString('yang',8)||'lei' as myname,toStringCutToZero(myname)||'.' as cut;
+
+-- 字符串判断
+SELECT 
+	empty(''),empty(' '),empty(NULL),
+	notEmpty(''),notEmpty(' '),notEmpty(NULL),
+	startsWith('abcde','ab'),
+	endsWith('abcde','de');
+-- 字符串长度
+SELECT 
+	length('abc啊啊啊'),lengthUTF8('abc啊啊啊'),
+	char_length('abc啊啊啊'),character_length('abc啊啊啊');
+-- 大小写转换
+SELECT 
+	lower('aBc'),lcase('aBc'),
+	upper('aBc'),ucase('aBc'),
+	reverse('abcde');
+-- 字符串连接
+SELECT 
+	format('{0} {1}','hello','world'),
+	concat('hello','world'),
+	'helle' || 'world';
+-- 字符串截取
+SELECT 
+	trimLeft('  abcde  '),
+	trimRight('  abcde  '),
+	trimBoth('  abcde  '),
+	substring('abcde',3,3),
+	appendTrailingCharIfAbsent('aabbcc','.');
+-- 字符串分割于拼接
+SELECT 
+	splitByChar(',' , '123,456,789'),
+	splitByString('||' , '123||456||789'),
+	arrayStringConcat(splitByString('||' , '123||456||789'));
+-- 字符串加解密
+SELECT 
+	base64Encode('https://clickhouse.tech/docs/v20.3/zh/query_language/functions/string_functions/') as encode,
+	base64Decode(encode) decode,
+	tryBase64Decode(NULL);	
+-- 字符串搜索
+SELECT 
+	locate('aabbccddee','cc'),locate('aabbccddee','ff'),
+	position('aabbccddee','cc'),position('aabbccddee','ff'),
+	positionCaseInsensitive('aabbCCddee','cc'),positionCaseInsensitive('aabbCCddee','ff'),
+	match('aabbccddeeaabbccddee','.+'),
+	-- 正则表达式提取字符串
+	extract('aabbccddeeaabbccddee','.+'),
+	extractAll('aabbccddeeaabbccddee','.+');
+-- 多字符串搜索
+SELECT 
+	multiSearchAllPositions('aabbccddeeaabbccddee',['cc','dd']),
+	multiSearchFirstPosition('aabbccddeeaabbccddee',['cc','dd']),
+	multiSearchFirstIndex('aabbccddeeaabbccddee',['cc','dd']),
+	multiSearchAny('aabbccddeeaabbccddee',['cc','dd']),
+	multiMatchAny('aabbccddeeaabbccddee',['.+']);
+-- 复制字符串十次
+SELECT 
+	replaceRegexpOne('Hello, World!', '.*', '\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0');
+	
+-- UUID函数
+SELECT 
+	generateUUIDv4(),toUUID('f4bf890f-f9dc-4332-ad5c-0c18e73f28e9');
+
+-- 元素转换函数(适用于值转换为名称)
+WITH 0 AS start
+SELECT 
+	number,
+	transform(number, [2, 3], ['Yandex', 'Google'], 'Baidu') AS title
+FROM system.numbers 
+WHERE number > start
+LIMIT 3;
+
+-- IP函数
+SELECT 
+	IPv4StringToNum('192.168.244.1') AS num,toIPv4('192.168.244.1'),
+	IPv4NumToString(num),IPv6NumToString(IPv4ToIPv6(num));
+
+-- URL函数
+SELECT 
+	-- 返回域名并删除第一个'www.'
+	domainWithoutWWW('https://clickhouse.tech/docs/zh/sql-reference/functions/url-functions/'),
+	-- 返回顶级域名
+	topLevelDomain('https://clickhouse.tech/docs/zh/sql-reference/functions/url-functions/'),
+	cutToFirstSignificantSubdomain('https://clickhouse.tech/docs/zh/sql-reference/functions/url-functions/'),
+	pathFull('https://clickhouse.tech/docs/zh/sql-reference/functions/url-functions/'),
+	URLHierarchy('https://clickhouse.tech/docs/zh/sql-reference/functions/url-functions/'),
+	-- 返回已经解码的URL
+	decodeURLComponent('http://127.0.0.1:8123/?query=SELECT%201%3B'),
+	-- 删除请求参数，问号也将被删除
+	cutQueryString('http://127.0.0.1:8123/?query=SELECT%201%3B');
+
+-- hash函数
+SELECT 
+	halfMD5('yanglei'),MD5('yanglei'),sipHash64('yanglei'),sipHash128('yanglei'),cityHash64('yanglei'),
+	SHA1('yanglei'),SHA224('yanglei'),SHA256('yanglei');
+SELECT intHash32(65535),intHash64(65535),URLHash('https://clickhouse.tech');
+
+-- json函数(用到再研究)
+
+-- 其他函数
+SELECT 
+	-- 当前查询的服务器的主机名
+	hostName(),FQDN(),
+	-- 当前查询的服务器的在线时间
+	uptime(),
+	-- 当前查询的服务器的版本
+	version(),
+	-- 当前查询的服务器的时区
+	timezone(),
+	formatReadableSize(filesystemAvailable()) AS "可用磁盘空间",
+	formatReadableSize(filesystemCapacity()) AS "总磁盘空间",
+	-- 当前数据库
+	currentDatabase(),
+	-- 当前用户
+	currentUser(),
+	-- 显示进度条
+	bar(1000, 0, 10000, 20),
+	-- 获取文件名
+	basename('/data/long/path/to/abc.log'),
+	-- 获取字符可见宽度
+	visibleWidth('123嗷嗷'),
+	-- 查询类型
+	toTypeName('yanglei'),toColumnTypeName('yanglei'),dumpColumnStructure('yanglei'),
+	-- 获取查询调用的块大小
+	blockSize(),
+	-- 在每个Block上休眠'seconds'秒，最大3秒
+	sleep(3),
+	-- 在每行上休眠'seconds'秒，最大3秒
+	sleepEachRow(3);
+```
+
+#### 日期函数
+
+```mysql
+-- 时间增减间隔
+SELECT 
+	now() + toIntervalYear(1), now() + INTERVAL 1 Year,
+	now() + toIntervalQuarter(1), now() + INTERVAL 1 Quarter,
+	now() + toIntervalMonth(1), now() + INTERVAL 1 Month,
+	now() + toIntervalWeek(1), now() + INTERVAL 1 Week,
+	now() + toIntervalDay(1), now() + INTERVAL 1 Day,
+	now() + toIntervalHour(1), now() + INTERVAL 1 Hour,
+	now() + toIntervalMinute(1), now() + INTERVAL 1 Minute,
+	now() + toIntervalSecond(1), now() + INTERVAL 1 Second;
+
+-- 时间查询
+SELECT 
+	now(),today(),yesterday(),
+	toYYYYMM(now()),
+	toYYYYMMDD(now()),
+	toYYYYMMDDhhmmss(now());
+
+-- 日期格式化
+SELECT 
+	today(),replaceRegexpOne(toString(today()), '(\\d{4})-(\\d{2})-(\\d{2})', '\\2/\\3/\\1'),
+	formatDateTime(now(),'%D');
+	
+-- 求时间间隔	
+SELECT 
+	dateDiff('day', yesterday(), today(), 'Asia/Shanghai')
+```
+
+#### 空值函数
+
+```mysql
+SELECT 
+	toInt32OrNull('65535a') AS mynull,
+	toInt32OrNull('65535b') AS mynull2,
+	isNull(mynull),isNotNull(mynull),
+	ifNull(mynull,100),
+	coalesce(mynull,mynull2,100),
+	CAST(mynull2, 'Nullable(Int32)'),
+	NULLIF(2,2),NULLIF(2,3),NULLIF(2,mynull2),NULLIF(mynull,mynull2),
+	assumeNotNull(mynull2),
+	toTypeName(10),toTypeName(toNullable(10))
+```
+
+#### 字典函数
+
+```mysql
+
+```
+
+#### 数组函数
+
+```mysql
+SELECT 
+	length([1,2,3]),range(10),arrayConcat([1, 2], [3, 4], [5, 6]);
+	
+-- 数组行转列
+SELECT 
+	arrayJoin([1, 2, 3] AS src) AS dst, 'Hello ' || toString(dst);
+
+-- 列转行(数组)
+SELECT groupArray(y)
+FROM 
+(
+	SELECT 1 x,100 y
+	union all
+	SELECT 2 x,200 y
+	union all
+	SELECT 2 x,NULL y
+	union all
+	SELECT 3 x,300 y
+	union all
+	SELECT 3 x,400 y
+) a;
+SELECT x,groupArray(y)
+FROM 
+(
+	SELECT 1 x,100 y
+	union all
+	SELECT 2 x,200 y
+	union all
+	SELECT 2 x,NULL y
+	union all
+	SELECT 3 x,300 y
+	union all
+	SELECT 3 x,400 y
+) a
+group by x;
+```
+
+#### 经纬度函数(GEO函数)
+
+```mysql
+-- 返回地球表面的两点之间的距离，以米为单位。
+SELECT greatCircleDistance(55.755831, 37.617673, -55.755831, -37.617673);
+
+-- 将任何geohash编码的字符串解码为经度和纬度
+SELECT geohashDecode('ezs42') AS res;
+```
+
+### 聚合函数
+
+```mysql
+SELECT 
+	count(y),count(DISTINCT y),sum(y),max(y),min(y),avg(y),
+	-- 统计唯一值的个数
+	uniq(x),uniq(x,y)
+	-- 选择最小y对应的x值
+	argMin(x, y),
+	-- 选择最大y对应的x值
+	argMax(x, y),
+	-- 选择第一个出现的值
+	any(y),
+	-- 选择一个出现最频繁的值
+	anyHeavy(y),
+	-- 选择最后一个出现的值
+	anyLast(y),
+	-- 计算累计求和数组
+	groupArrayMovingSum(y),
+	-- 计算累计求平均数组
+	groupArrayMovingAvg(y),
+	-- 返回topN数组
+	topK(3)(y),topKWeighted(3)(y,y)
+FROM 
+(
+	SELECT 1 x,200 y
+	union all
+	SELECT 2 x,100 y
+	union all
+	SELECT 2 x,NULL y
+	union all
+	SELECT 3 x,300 y
+	union all
+	SELECT 3 x,300 y
+) a;
+
+-- 按用户分组，根据每个用户的消费记录，按金额从大到小排序后分别设置行号
+select 
+    x,
+    value,
+    row_number
+from
+(
+	SELECT 
+		x,
+		groupArray(y) value_list,
+		arrayEnumerate(value_list) as index_list
+	FROM 
+	(
+		SELECT *
+		FROM 
+		(
+			SELECT 1 x,200 y
+			union all
+			SELECT 2 x,100 y
+			union all
+			SELECT 2 x,NULL y
+			union all
+			SELECT 3 x,300 y
+			union all
+			SELECT 3 x,100 y
+		) a 
+		order by y desc
+	) a
+	group by x
+)
+array join value_list as value,index_list as row_number
+order by x;
+```
+
+### 字典
+
+#### 外部扩展字典
+
+需要注意的是字典的 `key` 必须是 `Uint64` 类型的，因我们大部分基础表的 `key` 都是 `String` 类型的，所以无法直接使用字典。
+
+```mysql
+DROP TABLE IF EXISTS tutorial.dic_table;
+CREATE TABLE IF NOT EXISTS tutorial.dic_table (
+  c_key UInt64 COMMENT '键',
+  c_value String COMMENT '值',
+ `update_time` DateTime COMMENT '记录更新时间'
+) ENGINE = MergeTree()
+PRIMARY KEY c_key
+ORDER BY c_key;
+
+insert into tutorial.dic_table values (1,'百丽',now());
+insert into tutorial.dic_table values (2,'思加图',now());
+
+CREATE DICTIONARY tutorial.dic_test
+(
+  c_key UInt64,
+  c_value String
+)
+PRIMARY KEY c_key
+-- 字典数据源
+SOURCE(CLICKHOUSE(HOST 'localhost' PORT 9000 USER 'default' PASSWORD '' DB 'tutorial' TABLE 'dic_table'))
+-- Memory layout configuration
+LAYOUT(flat())
+-- 更新频率(秒)
+LIFETIME(MIN 10 MAX 30);
+
+SELECT * 
+FROM system.dictionaries;
+
+SELECT * 
+FROM tutorial.dic_test;
+
+SELECT number,dictGet('tutorial.dic_test', 'c_value', number) val 
+FROM numbers(5);
+
+select * 
+from numbers(5) as n 
+inner join tutorial.dic_test on c_key=number;
+```
+
+#### 参考资料
+
+[Clickhouse 数据字典](https://blog.csdn.net/vkingnew/article/details/106973674)
+
 ### 数据库管理
 
 ```mysql
@@ -1002,13 +1498,37 @@ cat bl_po_all.tsv | clickhouse-client --user=user_readonly --password=user_reado
 
 -- 通过快照表备份(通过远程查询方式)
 SELECT * FROM remote('172.17.209.53:61012','default','bl_po','user_readonly','user_readonly');
+
+-- 查看数据库总容量、压缩率
+select
+    sum(rows) as "总行数",
+    formatReadableSize(sum(data_uncompressed_bytes)) as "原始大小",
+    formatReadableSize(sum(data_compressed_bytes)) as "压缩大小",
+    round(sum(data_compressed_bytes) / sum(data_uncompressed_bytes) * 100, 0) "压缩率"
+from system.parts;
+
+-- 查看某个表的总容量、压缩率
+select
+	database as "库名",
+    table as "表名",
+    engine as "表引擎",
+    sum(rows) as "总行数",
+    formatReadableSize(sum(data_uncompressed_bytes)) as "原始大小",
+    formatReadableSize(sum(data_compressed_bytes)) as "压缩大小",
+    round(sum(data_compressed_bytes) / sum(data_uncompressed_bytes) * 100, 0) "压缩率"
+from system.parts
+where database in ('tutorial') and table in('hits_local')
+group by database,table,engine;
 ```
 
 ### 注意事项与要求
 
-表名、字段名全部使用小写（ClickHouse的语法是大小写敏感的）
+- 表名、字段名全部使用小写（ClickHouse的语法是大小写敏感的）
 
-避免使用 select *
+- 避免使用 select *
+
+- with中使用子查询只能返回一行数据
+
 
 ### 问题记录
 
@@ -1035,4 +1555,8 @@ SELECT * FROM remote('172.17.209.53:61012','default','bl_po','user_readonly','us
 [ClickHouse - 多卷存储扩大存储容量(生产环境必备)](https://blog.csdn.net/jiangshouzhuang/article/details/103650360)
 
 [DataX的Clickhouse读写插件](http://lab.orchina.org/design/clickhouse-reader-writer/)
+
+[Clickhouse集群应用、分片、复制](https://www.jianshu.com/p/20639fdfdc99)
+
+[ClickHouse分布式IN & JOIN 查询的避坑指南](https://www.it610.com/article/1278613838761050112.htm)
 

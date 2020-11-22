@@ -22,6 +22,8 @@
             * [Gitlab](hub_docker/source_code_tools/Gitlab.md)
         * 监控工具
             * [Pinpoint](hub_docker/monitor_tools/Pinpoint.md)
+            * [Prometheus](hub_docker/monitor_tools/prometheus.md)
+            * [Sentry](hub_docker/monitor_tools/Sentry.md)
         * 开发工具
             * [php](hub_docker/developer_tools/php.md)
             * [jenkins](hub_docker/developer_tools/jenkins.md)
@@ -40,6 +42,8 @@
             * [clickhouse](hub_docker/big_data/clickhouse.md)
         * BI工具
             * [FineBI](hub_docker/bi_tools/FineBI.md)
+        * 调度工具
+            * [Airflow](hub_docker/schedule_tools/airflow.md)
     * docker 命令
         * [容器管理](command/container.md)
         * [镜像管理](command/image.md)
