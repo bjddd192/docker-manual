@@ -1,6 +1,14 @@
 # zookeeper
 
-## 可视化工具
+### 官方地址
+
+[官网](https://zookeeper.apache.org/)
+
+[官方下载地址](https://downloads.apache.org/zookeeper/)
+
+[ZooKeeper Releases](http://archive.apache.org/dist/zookeeper/)
+
+### 可视化工具
 
 [DeemOpen/zkui](https://github.com/DeemOpen/zkui)
 

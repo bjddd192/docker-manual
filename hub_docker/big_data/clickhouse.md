@@ -14,27 +14,57 @@
 
 ### 安装部署
 
+[ClickHouse国家级项目最佳实践](https://www.jiqizhixin.com/articles/2020-05-06-5)
+
+[clickhouse搭建](http://blog.sunqiang.me/2020/01/09/clickhouse%E6%90%AD%E5%BB%BA/)
+
 #### 离线包下载
 
 [官方下载](https://repo.yandex.ru/clickhouse/rpm/)
 
 ```sh
-wget https://repo.yandex.ru/clickhouse/rpm/lts/x86_64/clickhouse-client-20.3.19.4-2.noarch.rpm
-wget https://repo.yandex.ru/clickhouse/rpm/lts/x86_64/clickhouse-common-static-20.3.19.4-2.x86_64.rpm
-wget https://repo.yandex.ru/clickhouse/rpm/lts/x86_64/clickhouse-server-20.3.19.4-2.noarch.rpm
-wget https://repo.yandex.ru/clickhouse/rpm/lts/x86_64/clickhouse-common-static-dbg-20.3.19.4-2.x86_64.rpm
+wget https://repo.yandex.ru/clickhouse/rpm/lts/x86_64/clickhouse-client-20.8.7.15-2.noarch.rpm
+wget https://repo.yandex.ru/clickhouse/rpm/lts/x86_64/clickhouse-common-static-20.8.7.15-2.x86_64.rpm
+wget https://repo.yandex.ru/clickhouse/rpm/lts/x86_64/clickhouse-server-20.8.7.15-2.noarch.rpm
+wget https://repo.yandex.ru/clickhouse/rpm/lts/x86_64/clickhouse-common-static-dbg-20.8.7.15-2.x86_64.rpm
+wget https://repo.yandex.ru/clickhouse/rpm/lts/x86_64/clickhouse-test-20.8.7.15-2.noarch.rpm
 ```
 
-#### CentOS部署
+#### CentOS yum 部署
 
 ```sh
-sudo yum install yum-utils
-sudo rpm --import https://repo.clickhouse.tech/CLICKHOUSE-KEY.GPG
-sudo yum-config-manager --add-repo https://repo.clickhouse.tech/rpm/clickhouse.repo
-sudo yum install clickhouse-server clickhouse-client
+yum -y install yum-utils
+yum-config-manager --add-repo https://repo.clickhouse.tech/rpm/clickhouse.repo
+yum makecache fast
+yum list clickhouse-server --showduplicates | sort -r
+rpm --import https://repo.clickhouse.tech/CLICKHOUSE-KEY.GPG
+yum -y install clickhouse-server-20.8.7.15-2
+yum -y install clickhouse-server-20.8.7.15-2
+yum list installed 'clickhouse*'
 
-sudo /etc/init.d/clickhouse-server start
-clickhouse-client
+systemctl start clickhouse-server 
+systemctl status clickhouse-server
+
+netstat -nltp | ag 8123
+
+
+# 卸载Clickhouse
+systemctl stop clickhouse-server
+yum list installed | grep clickhouse
+yum remove -y clickhouse-server
+yum remove -y clickhouse-common-static
+rm -rf /var/lib/clickhouse
+rm -rf /etc/clickhouse-*
+rm -rf /var/log/clickhouse-server
+rm -rf /data/clickhouse
+```
+
+#### CentOS 离线部署
+
+```sh
+# 查看CPU是否支持 SSE 4.2
+grep -q sse4_2 /proc/cpuinfo && echo "SSE 4.2 supported" || echo "SSE 4.2 not supported"
+
 ```
 
 #### Docker部署
@@ -1559,4 +1589,10 @@ group by database,table,engine;
 [Clickhouse集群应用、分片、复制](https://www.jianshu.com/p/20639fdfdc99)
 
 [ClickHouse分布式IN & JOIN 查询的避坑指南](https://www.it610.com/article/1278613838761050112.htm)
+
+[clickhouse分析：zookeeper减压概述](https://blog.csdn.net/iceyung/article/details/107500073)
+
+[ClickHouse多盘存储配置](https://cloud.tencent.com/developer/article/1649377)
+
+[clickhouse 推荐配置](https://blog.csdn.net/qq_17202587/article/details/103697179)
 

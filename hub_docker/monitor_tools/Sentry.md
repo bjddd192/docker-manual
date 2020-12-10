@@ -52,3 +52,5 @@ docker-compose up -d
 [Sentry 入门实战](http://sinhub.cn/2019/07/getting-started-guide-of-sentry/)
 
 [自建sentry服务器后，无法收到邮件问题](https://blog.csdn.net/socct_yj/article/details/103039698)
+
+[Sentry快速开始并集成钉钉群机器人](https://www.cnblogs.com/cjsblog/p/10585213.html)
