@@ -47,6 +47,14 @@ curl -L https://get.daocloud.io/docker/compose/$(docker-compose version --short)
 docker-compose up -d
 ```
 
+### 钉钉告警插件
+
+[FeSeason/sentry-10-dingding](https://github.com/FeSeason/sentry-10-dingding)
+
+修改 requirement.txt 文件增加插件 sentry-10-dingding，然后重新 install.sh 即可。
+
+钉钉告警的关键字配置为：sentry，才能收到告警信息哦。
+
 ### 参考资料
 
 [Sentry 入门实战](http://sinhub.cn/2019/07/getting-started-guide-of-sentry/)

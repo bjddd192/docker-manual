@@ -6,6 +6,8 @@
 
 [Yandex Cloud](https://console.cloud.yandex.com/)
 
+[中国社区论坛](http://www.clickhouse.com.cn/)
+
 ### 官方镜像
 
 [yandex/clickhouse-server](https://hub.docker.com/r/yandex/clickhouse-server/)
@@ -70,8 +72,8 @@ grep -q sse4_2 /proc/cpuinfo && echo "SSE 4.2 supported" || echo "SSE 4.2 not su
 #### Docker部署
 
 ```sh
-docker pull yandex/clickhouse-server:20.3.17.173
-docker pull yandex/clickhouse-client:20.3.17.173
+docker pull yandex/clickhouse-server:20.8.7.15
+docker pull yandex/clickhouse-client:20.8.7.15
   
 docker stop clickhouse-server && docker rm clickhouse-server 
 
@@ -83,7 +85,7 @@ docker stop clickhouse-server && docker rm clickhouse-server
 docker run -d --name clickhouse-server -p 9000:9000 -p 8123:8123 -p 9004:9004 -p 9009:9009 --restart=always \
   --ulimit nofile=262144:262144 \
   -v /data/docker_volumn/clickhouse-server:/var/lib/clickhouse \
-  yandex/clickhouse-server:20.3.17.173
+  yandex/clickhouse-server:20.8.7.15
 
 # 持久化
 # 数据目录：/var/lib/clickhouse
@@ -96,7 +98,7 @@ curl http://localhost:8123
 
 # 从本地客户端连接Server
 docker run -it --rm --link clickhouse-server:clickhouse-server \
-  yandex/clickhouse-client:20.3.17.173 --host clickhouse-server
+  yandex/clickhouse-client:20.8.7.15 --host clickhouse-server
 :) SHOW DATABASES;
 
 SHOW DATABASES
@@ -1018,6 +1020,8 @@ from `tutorial`.`bm_size`;
 
 -- 删除数据(不支持事务，实际是通过异步执行的)
 alter table tutorial.bak_bl_po delete where id = 3;
+-- 更新数据
+alter table db_test.bm_size update size_name = '23.0cm' where id=582;
 ```
 
 ### DQL
@@ -1080,6 +1084,35 @@ SELECT * FROM system.numbers LIMIT 1,10;
 SELECT * 
 FROM generateRandom('col_1 Array(Int8), col_2 String, col_3 Tuple(Decimal32(4)), col_4 DateTime', 1, 10, 3)
 limit 20;
+```
+
+#### 执行计划
+
+[尝鲜ClickHouse原生EXPLAIN查询功能](https://cloud.tencent.com/developer/article/1662230)
+
+```sh
+# 在clickhouse 20.6版本之前要查看SQL语句的执行计划需要设置日志级别为trace才能可以看到
+clickhouse-client --send_logs_level=trace <<< 'SELECT COUNT(*) FROM tutorial.hits_v1' > /dev/null
+clickhouse-client --send_logs_level=trace <<< 'SELECT * FROM tutorial.hits_v1' > /dev/null
+
+# 在20.6版本引入了原生的执行计划的语法
+# 执行计划的语法：：
+# EXPLAIN [AST | SYNTAX | PLAN | PIPELINE] [setting = value, ...] SELECT ... [FORMAT ...]
+# PLAN     用于查看执行计划，默认值。
+#   header       打印计划中各个步骤的 head 说明，默认关闭，默认值0;
+#   description  打印计划中各个步骤的描述，默认开启，默认值1；
+#   actions      打印计划中各个步骤的详细信息，默认关闭，默认值0。
+# AST      用于查看语法树;
+# SYNTAX   用于优化语法;
+# PIPELINE 用于查看 PIPELINE 计划。
+#   header     打印计划中各个步骤的 head 说明，默认关闭;
+#   graph     用DOT图形语言描述管道图，默认关闭，需要查看相关的图形需要配合graphviz查看；
+#   actions   如果开启了graph，紧凑打印打，默认开启。
+clickhouse-client -q "EXPLAIN PLAN SELECT COUNT(*) FROM tutorial.hits_v1"
+clickhouse-client -q "EXPLAIN PIPELINE SELECT COUNT(*) FROM tutorial.hits_v1"
+clickhouse-client -q "EXPLAIN header=1,actions=1,description=1 SELECT number from system.numbers limit 10;"
+# 带参数的：需要结合graphviz图形工具查看。
+clickhouse-client -q "EXPLAIN PIPELINE header=1,graph=1 SELECT sum(number) FROM numbers_mt(10000) GROUP BY number%5;"
 ```
 
 ### 函数
@@ -1551,6 +1584,55 @@ where database in ('tutorial') and table in('hits_local')
 group by database,table,engine;
 ```
 
+#### RBAC权限分配
+
+```mysql
+-- 开启内省功能
+-- 在计算机科学中，内省是指计算机程序在运行时（Run time）检查对象（Object）类型的一种能力，通常也可以称作运行时类型检查。
+set allow_introspection_functions=1;
+
+-- 查询有哪些权限项
+select  * from system.privileges; 
+
+-- 创建用户
+CREATE USER admin IDENTIFIED WITH PLAINTEXT_PASSWORD BY 'Admin123' ON CLUSTER '{glayer}';
+-- 赋予所有权限
+GRANT ON CLUSTER '{glayer}' ALL ON *.* TO admin WITH GRANT OPTION;
+
+-- 查询用户创建情况
+show create user admin;
+select name,id,storage,auth_type,host_ip from system.users where name in ('admin','default');
+-- 查询用户赋权情况
+show grants for admin;
+select * from system.grants where user_name in ('admin','default');
+
+-- 创建普通用户
+CREATE USER user_test IDENTIFIED WITH PLAINTEXT_PASSWORD BY 'user_test' ON CLUSTER '{glayer}';
+GRANT ON CLUSTER '{glayer}' SELECT,INSERT,ALTER UPDATE,ALTER DELETE ON db_test.* TO user_test;
+
+-- 创建角色
+CREATE ROLE role_app ON CLUSTER '{glayer}';
+GRANT ON CLUSTER '{glayer}' SELECT,INSERT,ALTER UPDATE,ALTER DELETE ON ldp_lmp_ods.* TO role_app;
+GRANT ON CLUSTER '{glayer}' SELECT,INSERT,ALTER UPDATE,ALTER DELETE ON ldp_lmd_ods.* TO role_app;
+
+CREATE USER user_biz IDENTIFIED WITH PLAINTEXT_PASSWORD BY 'user_biz' ON CLUSTER '{glayer}';
+GRANT role_app TO user_biz ON CLUSTER '{glayer}';
+ALTER USER user_biz DEFAULT ROLE role_app ON CLUSTER '{glayer}';
+CREATE SETTINGS PROFILE profile_max_memory_usage SETTINGS max_memory_usage=60000000000 TO role_app ON CLUSTER '{glayer}';
+
+select * from system.role;
+select * from system.role_grants;
+
+-- 收回权限
+-- REVOKE ON CLUSTER '{glayer}' SELECT,INSERT,ALTER MOVE PARTITION ON db_test.* FROM user_airflow;
+```
+
+[Clickhouse RBAC](https://blog.csdn.net/vkingnew/article/details/107308942)
+
+[初探ClickHouse的RBAC权限功能](https://cloud.tencent.com/developer/article/1630927)
+
+[clickhouse 用户权限设置](https://www.jianshu.com/p/3e08a7150fb1?utm_campaign=hugo)
+
 ### 注意事项与要求
 
 - 表名、字段名全部使用小写（ClickHouse的语法是大小写敏感的）
@@ -1595,4 +1677,6 @@ group by database,table,engine;
 [ClickHouse多盘存储配置](https://cloud.tencent.com/developer/article/1649377)
 
 [clickhouse 推荐配置](https://blog.csdn.net/qq_17202587/article/details/103697179)
+
+[Clickhouse的实践之路](https://mp.weixin.qq.com/s?__biz=MzA5MTc0NTMwNQ==&mid=2650726172&idx=2&sn=5a05e571f9022ae6a61541ca1c251e35&chksm=887dc26abf0a4b7c7b66b942d2e77eb43b5ef0a1f8699b7ed1675ebe0b25abf1df9850daa726&scene=126&sessionid=1608169178&key=95883e0ca92484b1b6460365842f1e04febaf405a97264fd7cb0be5021dcdf345840bbcec8ca57636177a375add6aee6124b36cf3f22509b3e1a3e8f2ed07b6b3ee3784a26835f1ae85fd2753d8739dfe489db7625605beeb7a177aa8573ba238ff7ca7e20a7fb6bcd6babe445491f1d9d4ca43a2e9d61f0ebaec74bbaad714c&ascene=1&uin=MjEzOTUzMTk3Mg%3D%3D&devicetype=Windows+10+x64&version=63000039&lang=zh_CN&exportkey=A5D592Lrg7U8xu%2BEWNYH3Gc%3D&pass_ticket=UxG3GpbqaKnjZk8mb%2BTCcIQ8ZJ6sImc3H%2BDtMeNDaGuWJ55BjF2YMvpSapDGe9Ms&wx_header=0)
 

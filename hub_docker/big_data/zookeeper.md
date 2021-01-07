@@ -8,6 +8,8 @@
 
 [ZooKeeper Releases](http://archive.apache.org/dist/zookeeper/)
 
+[Hub官方](https://hub.docker.com/_/zookeeper)
+
 ### 可视化工具
 
 [DeemOpen/zkui](https://github.com/DeemOpen/zkui)
