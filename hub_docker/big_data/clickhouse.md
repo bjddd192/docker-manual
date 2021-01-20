@@ -18,6 +18,8 @@
 
 [ClickHouse国家级项目最佳实践](https://www.jiqizhixin.com/articles/2020-05-06-5)
 
+[Clickhouse 在腾讯的应用实践](https://www.jiqizhixin.com/articles/2019-10-25-3)
+
 [clickhouse搭建](http://blog.sunqiang.me/2020/01/09/clickhouse%E6%90%AD%E5%BB%BA/)
 
 #### 离线包下载
@@ -1632,6 +1634,20 @@ select * from system.role_grants;
 [初探ClickHouse的RBAC权限功能](https://cloud.tencent.com/developer/article/1630927)
 
 [clickhouse 用户权限设置](https://www.jianshu.com/p/3e08a7150fb1?utm_campaign=hugo)
+
+#### 配置文件
+
+[ClickHouse学习系列之三【配置文件说明】](https://www.cnblogs.com/zhoujinyi/p/12627780.html)
+
+### 数据库监控
+
+[苏宁基于 ClickHouse 的大数据全链路监控实践](https://www.infoq.cn/article/ZJ5dFiYeywiK0DpG527C)
+
+### 负载均衡
+
+[chproxy](https://github.com/Vertamedia/chproxy/blob/master/README-CN.md)
+
+[clickhouse + chproxy 集群搭建](https://www.jianshu.com/p/9498fedcfee7)
 
 ### 注意事项与要求
 

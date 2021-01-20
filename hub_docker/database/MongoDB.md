@@ -215,7 +215,296 @@ docker exec -it mongo_replica_set03 mongo --port 30022 --host 10.68.0.7
 
 ### 分片集群
 
-后续继续深入研究。
+```sh
+# 部署集群 shard1
+mkdir -p /data/docker_volumn/mongo_shard_cluster/shardsvr11/data
+openssl rand -base64 756 > /data/docker_volumn/mongo_shard_cluster/shardsvr11/data/key_file
+chmod 400 /data/docker_volumn/mongo_shard_cluster/shardsvr11/data/key_file
+ll /data/docker_volumn/mongo_shard_cluster/shardsvr11/data/key_file
+cat /data/docker_volumn/mongo_shard_cluster/shardsvr11/data/key_file
+
+mkdir -p /data/docker_volumn/mongo_shard_cluster/shardsvr12/data
+mkdir -p /data/docker_volumn/mongo_shard_cluster/shardsvr13/data
+\cp -f /data/docker_volumn/mongo_shard_cluster/shardsvr11/data/key_file /data/docker_volumn/mongo_shard_cluster/shardsvr12/data/
+\cp -f /data/docker_volumn/mongo_shard_cluster/shardsvr11/data/key_file /data/docker_volumn/mongo_shard_cluster/shardsvr13/data/
+ll /data/docker_volumn/mongo_shard_cluster/shardsvr12/data/key_file
+ll /data/docker_volumn/mongo_shard_cluster/shardsvr13/data/key_file
+
+# docker stop mongo_shardsvr11 && docker rm mongo_shardsvr11
+docker run -d --name mongo_shardsvr11 --net=host --privileged --restart=always \
+-e MONGO_INITDB_ROOT_USERNAME=root \
+-e MONGO_INITDB_ROOT_PASSWORD=SYiXHC0hWE \
+-v /data/docker_volumn/mongo_shard_cluster/shardsvr11/data:/data/db \
+mongo:4.4.3 \
+numactl --interleave=all mongod --bind_ip 10.234.6.33 --port 27017 --replSet shard1 --shardsvr --auth --keyFile=/data/db/key_file
+
+# docker stop mongo_shardsvr12 && docker rm mongo_shardsvr12
+docker run -d --name mongo_shardsvr12 --net=host --privileged --restart=always \
+-e MONGO_INITDB_ROOT_USERNAME=root \
+-e MONGO_INITDB_ROOT_PASSWORD=SYiXHC0hWE \
+-v /data/docker_volumn/mongo_shard_cluster/shardsvr12/data:/data/db \
+mongo:4.4.3 \
+numactl --interleave=all mongod --bind_ip 10.234.6.33 --port 27027 --replSet shard1 --shardsvr --auth --keyFile=/data/db/key_file
+
+# docker stop mongo_shardsvr13 && docker rm mongo_shardsvr13
+docker run -d --name mongo_shardsvr13 --net=host --privileged --restart=always \
+-e MONGO_INITDB_ROOT_USERNAME=root \
+-e MONGO_INITDB_ROOT_PASSWORD=SYiXHC0hWE \
+-v /data/docker_volumn/mongo_shard_cluster/shardsvr13/data:/data/db \
+mongo:4.4.3 \
+numactl --interleave=all mongod --bind_ip 10.234.6.33 --port 27037 --replSet shard1 --shardsvr --auth --keyFile=/data/db/key_file
+
+# 初始化集群 shard1
+docker exec -it -e COLUMNS=200 -e LINES=200 mongo_shardsvr11 mongo admin --port 27017 --host 10.234.6.33 -u root -p SYiXHC0hWE
+> rs.initiate(
+   {
+      _id: "shard1",
+      members: [
+         { _id: 0, host : "10.234.6.33:27017" },
+         { _id: 1, host : "10.234.6.33:27027" },
+         { _id: 2, host : "10.234.6.33:27037" }
+      ]
+   }
+);
+shard1:PRIMARY> rs.status();
+
+# 部署集群 configsvr
+# 初始化时不能开启认证，--configsvr 时 MONGO_INITDB_ROOT_USERNAME 失效了
+# 需要初始化完集群后再用命令创建 root 用户
+mkdir -p /data/docker_volumn/mongo_shard_cluster/configsvr1/data
+mkdir -p /data/docker_volumn/mongo_shard_cluster/configsvr2/data
+mkdir -p /data/docker_volumn/mongo_shard_cluster/configsvr3/data
+\cp -f /data/docker_volumn/mongo_shard_cluster/shardsvr11/data/key_file /data/docker_volumn/mongo_shard_cluster/configsvr1/data
+\cp -f /data/docker_volumn/mongo_shard_cluster/shardsvr11/data/key_file /data/docker_volumn/mongo_shard_cluster/configsvr2/data
+\cp -f /data/docker_volumn/mongo_shard_cluster/shardsvr11/data/key_file /data/docker_volumn/mongo_shard_cluster/configsvr3/data
+ll /data/docker_volumn/mongo_shard_cluster/configsvr1/data
+ll /data/docker_volumn/mongo_shard_cluster/configsvr2/data
+ll /data/docker_volumn/mongo_shard_cluster/configsvr3/data
+
+# docker stop mongo_configsvr1 && docker rm mongo_configsvr1
+docker run -d --name mongo_configsvr1 --net=host --privileged --restart=always \
+-e MONGO_INITDB_ROOT_USERNAME=root \
+-e MONGO_INITDB_ROOT_PASSWORD=SYiXHC0hWE \
+-v /data/docker_volumn/mongo_shard_cluster/configsvr1/data:/data/configdb \
+mongo:4.4.3 \
+numactl --interleave=all mongod --bind_ip 10.234.6.33 --port 27015 --replSet config --configsvr
+
+# docker stop mongo_configsvr2 && docker rm mongo_configsvr2
+docker run -d --name mongo_configsvr2 --net=host --privileged --restart=always \
+-e MONGO_INITDB_ROOT_USERNAME=root \
+-e MONGO_INITDB_ROOT_PASSWORD=SYiXHC0hWE \
+-v /data/docker_volumn/mongo_shard_cluster/configsvr2/data:/data/configdb \
+mongo:4.4.3 \
+numactl --interleave=all mongod --bind_ip 10.234.6.33 --port 27025 --replSet config --configsvr
+
+# docker stop mongo_configsvr3 && docker rm mongo_configsvr3
+docker run -d --name mongo_configsvr3 --net=host --privileged --restart=always \
+-e MONGO_INITDB_ROOT_USERNAME=root \
+-e MONGO_INITDB_ROOT_PASSWORD=SYiXHC0hWE \
+-v /data/docker_volumn/mongo_shard_cluster/configsvr3/data:/data/configdb \
+mongo:4.4.3 \
+numactl --interleave=all mongod --bind_ip 10.234.6.33 --port 27035 --replSet config --configsvr
+
+# 初始化集群 configsvr
+docker exec -it -e COLUMNS=200 -e LINES=200 mongo_configsvr1 mongo admin --port 27015 --host 10.234.6.33
+> rs.initiate(
+   {
+      _id: "config",
+      configsvr: true,
+      members: [
+         { _id: 0, host : "10.234.6.33:27015" },
+         { _id: 1, host : "10.234.6.33:27025" },
+         { _id: 2, host : "10.234.6.33:27035" }
+      ]
+   }
+);
+config:PRIMARY> rs.status();
+config:PRIMARY> use admin
+config:PRIMARY> db.createUser(
+  {
+    user: "root",
+    pwd: "SYiXHC0hWE",
+    roles: [
+       { role: "root", db: "admin" }
+    ]
+  }
+);
+
+# 启用认证
+docker stop mongo_configsvr1 && docker rm mongo_configsvr1
+docker run -d --name mongo_configsvr1 --net=host --privileged --restart=always \
+-e MONGO_INITDB_ROOT_USERNAME=root \
+-e MONGO_INITDB_ROOT_PASSWORD=SYiXHC0hWE \
+-v /data/docker_volumn/mongo_shard_cluster/configsvr1/data:/data/configdb \
+mongo:4.4.3 \
+numactl --interleave=all mongod --bind_ip 10.234.6.33 --port 27015 --replSet config --configsvr --auth --keyFile=/data/configdb/key_file
+docker stop mongo_configsvr2 && docker rm mongo_configsvr2
+docker run -d --name mongo_configsvr2 --net=host --privileged --restart=always \
+-e MONGO_INITDB_ROOT_USERNAME=root \
+-e MONGO_INITDB_ROOT_PASSWORD=SYiXHC0hWE \
+-v /data/docker_volumn/mongo_shard_cluster/configsvr2/data:/data/configdb \
+mongo:4.4.3 \
+numactl --interleave=all mongod --bind_ip 10.234.6.33 --port 27025 --replSet config --configsvr --auth --keyFile=/data/configdb/key_file
+docker stop mongo_configsvr3 && docker rm mongo_configsvr3
+docker run -d --name mongo_configsvr3 --net=host --privileged --restart=always \
+-e MONGO_INITDB_ROOT_USERNAME=root \
+-e MONGO_INITDB_ROOT_PASSWORD=SYiXHC0hWE \
+-v /data/docker_volumn/mongo_shard_cluster/configsvr3/data:/data/configdb \
+mongo:4.4.3 \
+numactl --interleave=all mongod --bind_ip 10.234.6.33 --port 27035 --replSet config --configsvr --auth --keyFile=/data/configdb/key_file
+
+docker exec -it -e COLUMNS=200 -e LINES=200 mongo_configsvr1 mongo admin --port 27015 --host 10.234.6.33 -u root -p SYiXHC0hWE
+
+# 初始化 mongos
+mkdir -p /data/docker_volumn/mongo_shard_cluster/mongos1/data
+mkdir -p /data/docker_volumn/mongo_shard_cluster/mongos2/data
+mkdir -p /data/docker_volumn/mongo_shard_cluster/mongos3/data
+\cp -f /data/docker_volumn/mongo_shard_cluster/shardsvr11/data/key_file /data/docker_volumn/mongo_shard_cluster/mongos1/data
+\cp -f /data/docker_volumn/mongo_shard_cluster/shardsvr11/data/key_file /data/docker_volumn/mongo_shard_cluster/mongos2/data
+\cp -f /data/docker_volumn/mongo_shard_cluster/shardsvr11/data/key_file /data/docker_volumn/mongo_shard_cluster/mongos3/data
+ll /data/docker_volumn/mongo_shard_cluster/mongos1/data
+ll /data/docker_volumn/mongo_shard_cluster/mongos2/data
+ll /data/docker_volumn/mongo_shard_cluster/mongos3/data
+
+# docker stop mongo_mongos1 && docker rm mongo_mongos1
+docker run -d --name mongo_mongos1 --net=host --privileged --restart=always \
+-e MONGO_INITDB_ROOT_USERNAME=root \
+-e MONGO_INITDB_ROOT_PASSWORD=SYiXHC0hWE \
+-v /data/docker_volumn/mongo_shard_cluster/mongos1/data:/data/configdb \
+--entrypoint "mongos" \
+mongo:4.4.3 \
+--bind_ip 10.234.6.33 --port 27016 --configdb config/10.234.6.33:27015,10.234.6.33:27025,10.234.6.33:27035 \
+--keyFile=/data/configdb/key_file
+
+# docker stop mongo_mongos2 && docker rm mongo_mongos2
+docker run -d --name mongo_mongos2 --net=host --privileged --restart=always \
+-e MONGO_INITDB_ROOT_USERNAME=root \
+-e MONGO_INITDB_ROOT_PASSWORD=SYiXHC0hWE \
+-v /data/docker_volumn/mongo_shard_cluster/mongos2/data:/data/configdb \
+--entrypoint "mongos" \
+mongo:4.4.3 \
+--bind_ip 10.234.6.33 --port 27026 --configdb config/10.234.6.33:27015,10.234.6.33:27025,10.234.6.33:27035 \
+--keyFile=/data/configdb/key_file
+
+# docker stop mongo_mongos3 && docker rm mongo_mongos3
+docker run -d --name mongo_mongos3 --net=host --privileged --restart=always \
+-e MONGO_INITDB_ROOT_USERNAME=root \
+-e MONGO_INITDB_ROOT_PASSWORD=SYiXHC0hWE \
+-v /data/docker_volumn/mongo_shard_cluster/mongos3/data:/data/configdb \
+--entrypoint "mongos" \
+mongo:4.4.3 \
+--bind_ip 10.234.6.33 --port 27036 --configdb config/10.234.6.33:27015,10.234.6.33:27025,10.234.6.33:27035 \
+--keyFile=/data/configdb/key_file
+
+docker exec -it -e COLUMNS=200 -e LINES=200 mongo_mongos1 mongo admin --port 27016 --host 10.234.6.33 -u root -p SYiXHC0hWE
+docker exec -it -e COLUMNS=200 -e LINES=200 mongo_mongos2 mongo admin --port 27026 --host 10.234.6.33 -u root -p SYiXHC0hWE
+docker exec -it -e COLUMNS=200 -e LINES=200 mongo_mongos2 mongo admin --port 27036 --host 10.234.6.33 -u root -p SYiXHC0hWE
+
+# 添加分片到集群
+mongos> sh.addShard("shard1/10.234.6.33:27017,10.234.6.33:27027,10.234.6.33:27037");
+mongos> sh.status();
+
+# 启用分片
+mongos> sh.enableSharding("db_test");
+mongos> sh.shardCollection("db_test.order", {_id: "hashed"});
+
+# 测试分片集群
+mongos> use db_test
+mongos> for (i = 1; i <= 1001; i=i+1){
+db.order.insert({i: i})
+}
+mongos> sh.status();
+
+# 部署集群 shard2
+mkdir -p /data/docker_volumn/mongo_shard_cluster/shardsvr21/data
+mkdir -p /data/docker_volumn/mongo_shard_cluster/shardsvr22/data
+mkdir -p /data/docker_volumn/mongo_shard_cluster/shardsvr23/data
+\cp -f /data/docker_volumn/mongo_shard_cluster/shardsvr11/data/key_file /data/docker_volumn/mongo_shard_cluster/shardsvr21/data/
+\cp -f /data/docker_volumn/mongo_shard_cluster/shardsvr11/data/key_file /data/docker_volumn/mongo_shard_cluster/shardsvr22/data/
+\cp -f /data/docker_volumn/mongo_shard_cluster/shardsvr11/data/key_file /data/docker_volumn/mongo_shard_cluster/shardsvr23/data/
+ll /data/docker_volumn/mongo_shard_cluster/shardsvr21/data/key_file
+ll /data/docker_volumn/mongo_shard_cluster/shardsvr22/data/key_file
+ll /data/docker_volumn/mongo_shard_cluster/shardsvr23/data/key_file
+
+# docker stop mongo_shardsvr21 && docker rm mongo_shardsvr21
+docker run -d --name mongo_shardsvr21 --net=host --privileged --restart=always \
+-v /data/docker_volumn/mongo_shard_cluster/shardsvr21/data:/data/db \
+mongo:4.4.3 \
+numactl --interleave=all mongod --bind_ip 10.234.6.33 --port 27018 --replSet shard2 --shardsvr
+
+# docker stop mongo_shardsvr22 && docker rm mongo_shardsvr22
+docker run -d --name mongo_shardsvr22 --net=host --privileged --restart=always \
+-v /data/docker_volumn/mongo_shard_cluster/shardsvr22/data:/data/db \
+mongo:4.4.3 \
+numactl --interleave=all mongod --bind_ip 10.234.6.33 --port 27028 --replSet shard2 --shardsvr
+
+# docker stop mongo_shardsvr23 && docker rm mongo_shardsvr23
+docker run -d --name mongo_shardsvr23 --net=host --privileged --restart=always \
+-v /data/docker_volumn/mongo_shard_cluster/shardsvr23/data:/data/db \
+mongo:4.4.3 \
+numactl --interleave=all mongod --bind_ip 10.234.6.33 --port 27038 --replSet shard2 --shardsvr
+
+# 初始化集群 shard2
+docker exec -it -e COLUMNS=200 -e LINES=200 mongo_shardsvr21 mongo admin --port 27018 --host 10.234.6.33
+> rs.initiate(
+   {
+      _id: "shard2",
+      members: [
+         { _id: 0, host : "10.234.6.33:27018" },
+         { _id: 1, host : "10.234.6.33:27028" },
+         { _id: 2, host : "10.234.6.33:27038" }
+      ]
+   }
+);
+shard2:PRIMARY> rs.status();
+shard2:PRIMARY> use admin
+shard2:PRIMARY> db.createUser(
+  {
+    user: "root",
+    pwd: "SYiXHC0hWE",
+    roles: [
+       { role: "root", db: "admin" }
+    ]
+  }
+);
+
+# 启用认证
+docker stop mongo_shardsvr21 && docker rm mongo_shardsvr21
+docker run -d --name mongo_shardsvr21 --net=host --privileged --restart=always \
+-v /data/docker_volumn/mongo_shard_cluster/shardsvr21/data:/data/db \
+mongo:4.4.3 \
+numactl --interleave=all mongod --bind_ip 10.234.6.33 --port 27018 --replSet shard2 --shardsvr --auth --keyFile=/data/db/key_file
+docker stop mongo_shardsvr22 && docker rm mongo_shardsvr22
+docker run -d --name mongo_shardsvr22 --net=host --privileged --restart=always \
+-v /data/docker_volumn/mongo_shard_cluster/shardsvr22/data:/data/db \
+mongo:4.4.3 \
+numactl --interleave=all mongod --bind_ip 10.234.6.33 --port 27028 --replSet shard2 --shardsvr --auth --keyFile=/data/db/key_file
+docker stop mongo_shardsvr23 && docker rm mongo_shardsvr23
+docker run -d --name mongo_shardsvr23 --net=host --privileged --restart=always \
+-v /data/docker_volumn/mongo_shard_cluster/shardsvr23/data:/data/db \
+mongo:4.4.3 \
+numactl --interleave=all mongod --bind_ip 10.234.6.33 --port 27038 --replSet shard2 --shardsvr --auth --keyFile=/data/db/key_file
+
+docker exec -it -e COLUMNS=200 -e LINES=200 mongo_shardsvr21 mongo admin --port 27018 --host 10.234.6.33 -u root -p SYiXHC0hWE
+shard2:PRIMARY> rs.status();
+
+# 添加分片到集群
+docker exec -it -e COLUMNS=200 -e LINES=200 mongo_mongos1 mongo admin --port 27016 --host 10.234.6.33 -u root -p SYiXHC0hWE
+mongos> sh.addShard("shard2/10.234.6.33:27018,10.234.6.33:27028,10.234.6.33:27038");
+mongos> sh.status();
+
+# 等待一小段时间，发现分片数据会自动重平衡
+```
+
+#### 参考资料
+
+[在Docker上部署mongodb分片副本集群](https://www.cnblogs.com/hehexiaoxia/p/6192796.html)
+
+[Docker搭建MongoDB集群（副本分片）](https://www.cnblogs.com/mergy/p/12916517.html)
+
+[docker方式部署mongodb带认证的分片副本集群](https://blog.csdn.net/guan0005/article/details/86995019)
+
+[docker-compose搭建mongodb分片集群及安全身份认证（实战）](https://blog.csdn.net/yufei_java/article/details/103704582)
 
 ## 参考资料
 

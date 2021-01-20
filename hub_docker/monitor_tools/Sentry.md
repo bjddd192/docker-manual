@@ -38,7 +38,7 @@ yum -y install bash-completion
 
 curl -L https://get.daocloud.io/docker/compose/$(docker-compose version --short)/contrib/completion/bash/docker-compose -o /etc/bash_completion.d/docker-compose
 
-# 根据环境的实际情况修改 docker-compose.yml、install.sh 文件
+# 根据环境的实际情况修改 docker-compose.yml、install.sh requirements.txt 文件
 
 # 初始化 sentry
 ./install.sh
@@ -51,7 +51,7 @@ docker-compose up -d
 
 [FeSeason/sentry-10-dingding](https://github.com/FeSeason/sentry-10-dingding)
 
-修改 requirement.txt 文件增加插件 sentry-10-dingding，然后重新 install.sh 即可。
+修改 requirements.txt 文件增加插件 sentry-10-dingding，然后重新 install.sh 即可。
 
 钉钉告警的关键字配置为：sentry，才能收到告警信息哦。
 
