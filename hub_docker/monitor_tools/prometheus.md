@@ -120,6 +120,21 @@ docker run -d --name blackbox-exporter -p 9115:9115 --restart=always \
 # http://172.17.209.202:9115/probe?module=ping&target=172.17.209.53
 ```
 
+#### clickhouse-exporter
+
+[hub官方](https://hub.docker.com/r/f1yegor/clickhouse-exporter)
+
+[github](https://github.com/f1yegor/clickhouse_exporter)
+
+```sh
+docker run -d --name clickhouse-exporter -p 9116:9116 --restart=always \
+-e CLICKHOUSE_USER=default \
+-e CLICKHOUSE_PASSWORD=go2House \
+f1yegor/clickhouse-exporter -scrape_uri=http://172.17.209.53:51011/
+```
+
+
+
 ##### 参考资料
 
 [prometheus的黑盒监控](https://zhangguanzhang.github.io/2018/12/04/black-box-exporter/)
@@ -170,7 +185,8 @@ docker restart grafana
 ```
 
 - node-exporter 看板ID： https://grafana.com/grafana/dashboards/8919
-- blackbox_exporter 看板ID： 
+- blackbox-exporter 看板ID： 
+- clickhouse-exporter 看板ID： https://grafana.com/grafana/dashboards/882
 
 #### 优质看板
 

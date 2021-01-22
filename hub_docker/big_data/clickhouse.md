@@ -1643,6 +1643,8 @@ select * from system.role_grants;
 
 [苏宁基于 ClickHouse 的大数据全链路监控实践](https://www.infoq.cn/article/ZJ5dFiYeywiK0DpG527C)
 
+[clickhouse+chproxy+promethues](https://blog.csdn.net/yyoc97/article/details/106075220)
+
 ### 负载均衡
 
 [chproxy](https://github.com/Vertamedia/chproxy/blob/master/README-CN.md)
