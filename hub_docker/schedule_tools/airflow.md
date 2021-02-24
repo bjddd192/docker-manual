@@ -61,6 +61,30 @@ airflow create_user --lastname user --firstname admin --username admin --email y
 airflow create_user --lastname user --firstname view --username view --email view_user@mail.com --role Viewer --password view2#Air
 ```
 
+### k8s部署
+
+[mumoshu/kube-airflow](https://github.com/mumoshu/kube-airflow)
+
+### 体系架构
+
+组成部分           | 描述
+-------------------|--------------------------------------
+Flower 与Webserver | 用于监测和与Airflow集群交互的用户前端
+Scheduler          | 连续轮询DAG并安排任务。 监视执行
+Workers            | 从队列执行任务，并报告回队列
+Shared Filesystem  | 在所有群集节点之间同步DAG
+Queue              | 可靠地调度计划任务和任务结果
+Metadb             | 存储执行历史记录，工作流和其他元数据
+
+执行器              | 描述
+--------------------|----------------------------------------------------------------------------------------------------
+Sequential Executor | 顺序逐个地启动任务
+Local Executor      | 在本地并行启动任务
+Celery Executor     | Celery是执行程序首选种类型。实际上，它被用于在多个节点上并行分布处理
+Dask Executor       | 这种执行器允许Airflow在Python集群Dask中启动不同的任务
+Kubernetes Executor | 这种执行器允许Airflow在Kubernetes集群中创建或分组任务。 （注意：该功能要求Airflow最小的版本为1.10）
+Debug Executor      | DebugExecutor设计为调试工具，可以从IDE中使用
+
 ### 参考资料
 
 [AirFlow简介](https://www.cnblogs.com/cord/p/9450910.html)
@@ -82,3 +106,13 @@ airflow create_user --lastname user --firstname view --username view --email vie
 [airflow时区问题](https://blog.csdn.net/luanpeng825485697/article/details/105116369)
 
 [AirFlow 常见问题](https://blog.csdn.net/gqj54082161/article/details/103756354/)
+
+[Deploying Scalable, Production-Ready Airflow in 10 Easy Steps Using Kubernetes](https://levelup.gitconnected.com/deploying-scalable-production-ready-airflow-in-10-easy-steps-using-kubernetes-4f449d01f47a)
+
+[3 Ways to Run Airflow on Kubernetes](https://fullstaq.com/run-airflow-kubernetes/#a-nameheading-k8skedaausing-keda-with-airflow)
+
+[将 Apache Airflow 部署到云端](https://aws.amazon.com/cn/blogs/china/deploy-apache-airflow-to-the-cloud/)
+
+[airflow调度原理及k8s调度原则](https://blog.csdn.net/wangyhwyh753/article/details/103427926)
+
+[Kubernetes Executor](https://airflow.apache.org/docs/apache-airflow/stable/executor/kubernetes.html)

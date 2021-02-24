@@ -932,6 +932,8 @@ mongos> db.adminCommand( { movePrimary: "db_test3", to: "shard1" } )
 
 [MongoDB学习分片](https://www.cnblogs.com/liujitao79/p/6899793.html)
 
+[MongoDB水平分片集群学习笔记](https://my.oschina.net/costaxu/blog/196980)
+
 ## 参考资料
 
 [MongoDB的Replica Set以及Auth的配置](https://www.cnblogs.com/pbblogs/p/9783964.html)

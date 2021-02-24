@@ -14,6 +14,10 @@
 
 [yandex/clickhouse-client](https://hub.docker.com/r/yandex/clickhouse-client)
 
+### 官方在线练习
+
+[Clickhouse Playground](https://play.clickhouse.tech/?file=playground)
+
 ### 安装部署
 
 [ClickHouse国家级项目最佳实践](https://www.jiqizhixin.com/articles/2020-05-06-5)
@@ -1666,6 +1670,8 @@ select * from system.role_grants;
 
 [Dberver 连接 ClickHouse:Cannot modify max_result_rows setting in readonly mode](https://blog.csdn.net/qq_18769269/article/details/106917575)
 
+[ClickHouse连接超时的解决方法](https://blog.csdn.net/ws271/article/details/111914727)
+
 ### 参考资料
 
 [clickhouse/yyoc97的专栏](https://blog.csdn.net/yyoc97/category_9053674.html)
@@ -1697,4 +1703,8 @@ select * from system.role_grants;
 [clickhouse 推荐配置](https://blog.csdn.net/qq_17202587/article/details/103697179)
 
 [Clickhouse的实践之路](https://mp.weixin.qq.com/s?__biz=MzA5MTc0NTMwNQ==&mid=2650726172&idx=2&sn=5a05e571f9022ae6a61541ca1c251e35&chksm=887dc26abf0a4b7c7b66b942d2e77eb43b5ef0a1f8699b7ed1675ebe0b25abf1df9850daa726&scene=126&sessionid=1608169178&key=95883e0ca92484b1b6460365842f1e04febaf405a97264fd7cb0be5021dcdf345840bbcec8ca57636177a375add6aee6124b36cf3f22509b3e1a3e8f2ed07b6b3ee3784a26835f1ae85fd2753d8739dfe489db7625605beeb7a177aa8573ba238ff7ca7e20a7fb6bcd6babe445491f1d9d4ca43a2e9d61f0ebaec74bbaad714c&ascene=1&uin=MjEzOTUzMTk3Mg%3D%3D&devicetype=Windows+10+x64&version=63000039&lang=zh_CN&exportkey=A5D592Lrg7U8xu%2BEWNYH3Gc%3D&pass_ticket=UxG3GpbqaKnjZk8mb%2BTCcIQ8ZJ6sImc3H%2BDtMeNDaGuWJ55BjF2YMvpSapDGe9Ms&wx_header=0)
+
+[云数据库ClickHouse二级索引-最佳实践](https://developer.aliyun.com/article/780402)
+
+[配置ClickHouse分布式DDL记录自动清理](https://blog.csdn.net/nazeniwaresakini/article/details/107742717)
 
