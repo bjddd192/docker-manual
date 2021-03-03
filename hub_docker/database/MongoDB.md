@@ -753,7 +753,7 @@ mongos> sh.shardCollection("db_test.order", {_id: "hashed"});
 
 # 测试分片集群
 mongos> use db_test
-mongos> for (i = 1; i <= 1001; i=i+1){
+mongos> for (i = 1; i <= 1001000; i=i+1){
 db.order.insert({i: i})
 }
 mongos> sh.status();

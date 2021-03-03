@@ -1655,6 +1655,133 @@ select * from system.role_grants;
 
 [clickhouse + chproxy 集群搭建](https://www.jianshu.com/p/9498fedcfee7)
 
+### 数据库备份与还原
+
+#### 创建测试数据
+
+```sql
+CREATE database if not exists `db_backup_test` on cluster '{layer}';
+
+-- DROP TABLE IF EXISTS db_backup_test.bl_po ON CLUSTER '{layer}';
+CREATE TABLE IF NOT EXISTS db_backup_test.bl_po ON CLUSTER '{layer}' (
+ `id` Int64 COMMENT '采购订单主表-主键ID',
+ `company_id` Int64 COMMENT '租赁公司ID(SAAS预留字段)',
+ `bill_no` String COMMENT '单据编号',
+ `status` String COMMENT '单据状态(10=制单 15=提交 20=审核 30=确认 99=取消 100=完结)',
+ `creator` String COMMENT '创建人',
+ `create_time` DateTime COMMENT '创建时间',
+ `modifier` Nullable(String) COMMENT '修改人',
+ `modify_time` Nullable(DateTime) COMMENT '修改时间',
+ `auditor` Nullable(String) COMMENT '审核人',
+ `audit_time` Nullable(DateTime) COMMENT '审核时间',
+ `remarks` Nullable(String) COMMENT '备注',
+ `update_time` DateTime COMMENT '记录更新时间'
+) ENGINE = ReplicatedMergeTree('/clickhouse/db_backup_test/tables/{shard}/bl_po','{replica}')
+PARTITION BY toYYYYMM(create_time)
+PRIMARY KEY bill_no
+ORDER BY bill_no;
+
+INSERT INTO db_backup_test.bl_po
+(id, company_id, bill_no, status, creator, create_time, modifier, modify_time, auditor, audit_time, remarks, update_time)
+VALUES
+(1, 1, 'P20201102001', '99', '阳磊', '2020-11-02 12:12:12', Null, Null, '系统管理员', '2020-11-02 12:12:12', '', '2020-11-02 12:12:12');
+
+INSERT INTO db_backup_test.bl_po
+(id, company_id, bill_no, status, creator, create_time, modifier, modify_time, auditor, audit_time, remarks, update_time)
+VALUES
+(2, 1, 'P20201004001', '99', '阳磊', '2020-10-04 12:12:12', Null, Null, '系统管理员', '2020-10-04 12:12:12', '', '2020-10-04 12:12:12');
+
+INSERT INTO db_backup_test.bl_po
+(id, company_id, bill_no, status, creator, create_time, modifier, modify_time, auditor, audit_time, remarks, update_time)
+VALUES
+(3, 1, 'P20201103001', '99', '阳磊', '2020-11-03 12:12:12', Null, Null, '系统管理员', '2020-11-03 12:12:12', '', '2020-11-03 12:12:12');
+
+SELECT * FROM db_backup_test.bl_po;
+```
+
+#### 导出csv方式备份
+
+```mysql
+-- 数据导出文件备份(适合数据体量较小的表)
+-- 不能备份表结构，表结构需要有单独的备份
+-- 备份文件比较大，需要进行压缩
+clickhouse-client --host 172.17.209.53 --port 61011 --user=default --password=go2House --query="select * from db_backup_test.bl_po" > /var/lib/clickhouse/backup/172.17.209.53-61011-db_backup_test.bl_po.tsv
+clickhouse-client --host 172.17.209.53 --port 61012 --user=default --password=go2House --query="select * from db_backup_test.bl_po" > /var/lib/clickhouse/backup/172.17.209.53-61012-db_backup_test.bl_po.tsv
+clickhouse-client --host 172.17.209.53 --port 61021 --user=default --password=go2House --query="select * from db_backup_test.bl_po" > /var/lib/clickhouse/backup/172.17.209.53-61021-db_backup_test.bl_po.tsv
+clickhouse-client --host 172.17.209.53 --port 61022 --user=default --password=go2House --query="select * from db_backup_test.bl_po" > /var/lib/clickhouse/backup/172.17.209.53-61022-db_backup_test.bl_po.tsv
+-- 备份数据导入
+-- 多个文件可以用 172.17.209.53-61011-db_backup_test*
+cat /var/lib/clickhouse/backup/172.17.209.53-61011-db_backup_test.bl_po.tsv | clickhouse-client --host 172.17.209.53 --port 61011 --user=default --password=go2House --query="insert into db_backup_test.bl_po FORMAT TSV" --max_insert_block_size=100000
+-- 多次导入数据会重复
+-- 去重指令（需要ReplicatedReplacingMergeTree引擎表才能去重）
+OPTIMIZE table db_backup_test.bl_po FINAL;
+```
+
+#### 表快照
+
+```mysql
+-- 适合临时备份单个表
+
+-- drop table if exists db_backup_test.bl_po_local;
+CREATE table db_backup_test.bl_po_local as db_backup_test.bl_po
+ENGINE = ReplicatedMergeTree('/clickhouse/db_backup_test/tables/{shard}/bl_po_local','{replica}')
+PARTITION BY toYYYYMM(create_time)
+PRIMARY KEY bill_no
+ORDER BY bill_no;
+
+-- 本地表快照
+insert into table db_backup_test.bl_po_local select * from db_backup_test.bl_po;
+
+-- 远程表快照
+insert into table db_backup_test.bl_po_local 
+SELECT * FROM remote('172.17.209.53:61011','db_backup_test','bl_po','default','go2House');
+```
+
+#### 文件系统快照
+
+某些本地文件系统提供快照功能（例如, [ZFS](https://en.wikipedia.org/wiki/ZFS)），但它们可能不是提供实时查询的最佳选择。 一个可能的解决方案是使用这种文件系统创建额外的副本，并将它们从 [分布](https://clickhouse.tech/docs/zh/engines/table-engines/special/distributed/) 用于以下目的的表 `SELECT` 查询。 任何修改数据的查询都无法访问此类副本上的快照。
+
+暂不研究。
+
+#### 冻结分区操作
+
+ClickHouse允许使用 `ALTER TABLE ... FREEZE PARTITION ...` 查询以创建表分区的本地副本。 这是利用硬链接(hardlink)到 `/var/lib/clickhouse/shadow/` 文件夹中实现的，所以它通常不会占用旧数据的额外磁盘空间。  创建的文件副本不由ClickHouse服务器处理，所以你可以把它们留在那里：你将有一个简单的备份，不需要任何额外的外部系统，但它仍然会容易出现硬件问题。 出于这个原因，最好将它们远程复制到另一个位置，然后删除本地副本。  分布式文件系统和对象存储仍然是一个不错的选择，但是具有足够大容量的正常附加文件服务器也可以工作（在这种情况下，传输将通过网络文件系统 [rsync](https://en.wikipedia.org/wiki/Rsync)).
+
+```sh
+# 语法: ALTER TABLE table_name FREEZE [PARTITION partition_expr]
+# 该操作为指定分区创建一个本地备份。
+# 如果 PARTITION 语句省略，该操作会一次性为所有分区创建备份。整个备份过程不需要停止服务
+# 注意：FREEZE PARTITION 只复制数据, 不备份元数据. 元数据默认在文件 /var/lib/clickhouse/metadata/database/table.sql
+# 此方式个人认为也只适用于临时备份单个表
+
+cat /var/lib/clickhouse/metadata/db_backup_test/bl_po_local.sql 
+
+# 冻结表
+alter table db_backup_test.bl_po_local freeze;
+echo -n 'alter table db_backup_test.bl_po_local freeze;' | clickhouse-client --user=default --password=go2House
+
+# 保存备份
+mkdir -p /var/lib/clickhouse/backup/20210225
+mv /var/lib/clickhouse/shadow/* /var/lib/clickhouse/backup/20210225
+# 同时备份下表结构
+cp /var/lib/clickhouse/metadata/db_backup_test/bl_po_local.sql /var/lib/clickhouse/backup/20210225
+
+# 手动恢复
+# 创建表，表不存在则根据备份的表结构创建，只需要将ATTACH修改为CREATE即可
+cp -rl /var/lib/clickhouse/backup/20210225/2/data/db_backup_test/bl_po_local/* /var/lib/clickhouse/data/db_backup_test/bl_po_local/detached
+chown -R clickhouse.clickhouse /var/lib/clickhouse/data/db_backup_test/bl_po_local/detached/*
+echo 'alter table db_backup_test.bl_po_local attach partition 202010' | clickhouse-client --user=default --password=go2House
+echo 'alter table db_backup_test.bl_po_local attach partition *' | clickhouse-client --user=default --password=go2House
+```
+
+ClickHouse应用文件系统硬链接来实现即时备份，而不会导致ClickHouse服务停机（或锁定）。这些硬链接能够进一步用于无效的备份存储。在反对硬链接的文件系统（例如本地文件系统或NFS）上，将cp与-l标记一起应用（或将rsync与–hard-links和–numeric-ids标记一起应用）以防止复制数据。 
+
+当应用硬链接时，磁盘上的存储效率更高。因为它们依赖于硬链接，所以即便防止了重复使用磁盘空间，每个备份实际上都是“残缺”备份。
+
+
+
+[clickhouse-copier 使用](https://hughsite.com/post/clickhouse-copier-usage.html)
+
 ### 注意事项与要求
 
 - 表名、字段名全部使用小写（ClickHouse的语法是大小写敏感的）
