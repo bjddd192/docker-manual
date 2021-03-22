@@ -164,6 +164,8 @@ FROM system.clusters;
 
 [jneo8 / clickhouse-setup](https://github.com/jneo8/clickhouse-setup)
 
+[clickhouse-cluster-example](https://github.com/hughshen/clickhouse-cluster-example)
+
 #### k8s部署
 
 [ xiaods / k8s-clickhouse-v2 ](https://github.com/xiaods/k8s-clickhouse-v2)
@@ -1778,9 +1780,233 @@ ClickHouse应用文件系统硬链接来实现即时备份，而不会导致Clic
 
 当应用硬链接时，磁盘上的存储效率更高。因为它们依赖于硬链接，所以即便防止了重复使用磁盘空间，每个备份实际上都是“残缺”备份。
 
+#### clickhouse-copier
 
+`clickhouse-copier`是官方的数据迁移工具，用于多个集群之间的数据迁移。
+
+[clickhouse-copier](https://clickhouse.tech/docs/zh/operations/utilities/clickhouse-copier/)
 
 [clickhouse-copier 使用](https://hughsite.com/post/clickhouse-copier-usage.html)
+
+[clickhouse-copier是如何进行数据迁移的](https://blog.csdn.net/weixin_39992480/article/details/111564982)
+
+zookeeper.xml
+
+```xml
+<yandex>
+    <logger>
+        <level>trace</level>
+        <size>100M</size>
+        <count>3</count>
+    </logger>
+
+    <zookeeper>
+        <node index="1">
+            <host>zoo1</host>
+            <port>2181</port>
+        </node>
+        <node index="2">
+            <host>zoo2</host>
+            <port>2181</port>
+        </node>
+        <node index="3">
+            <host>zoo3</host>
+            <port>2181</port>
+        </node>
+    </zookeeper>
+</yandex>
+```
+
+task.xml
+
+```xml
+<yandex>
+    <remote_servers>
+        <src_cluster>
+            <shard>
+                <internal_replication>true</internal_replication>
+                <replica>
+                    <host>chs01011</host>
+                    <port>9000</port>
+                    <user>default</user>
+                    <password>go2House</password>
+                </replica>
+                <replica>
+                    <host>chs01012</host>
+                    <port>9000</port>
+                    <user>default</user>
+                    <password>go2House</password>
+                </replica>
+            </shard>
+        </src_cluster>
+        <dst_cluster>
+            <shard>
+                <internal_replication>true</internal_replication>
+                <replica>
+                    <host>chs01021</host>
+                    <port>9000</port>
+                    <user>default</user>
+                    <password>go2House</password>
+                </replica>
+                <replica>
+                    <host>chs01022</host>
+                    <port>9000</port>
+                    <user>default</user>
+                    <password>go2House</password>
+                </replica>
+            </shard>
+        </dst_cluster>
+    </remote_servers>
+    <!-- 最大worker数 -->
+    <max_workers>4</max_workers>
+    <!-- fetch (pull) data 设置为只读 -->
+    <settings_pull>
+        <readonly>1</readonly>
+    </settings_pull>
+    <!-- insert (push) data 设置为读写 -->
+    <settings_push>
+        <readonly>0</readonly>
+    </settings_push>
+
+    <settings>
+        <connect_timeout>3</connect_timeout>
+        <insert_distributed_sync>1</insert_distributed_sync>
+    </settings>
+    
+    <!-- 任务描述，可以配置多个，多个任务会顺序执行 -->
+    <tables>
+        <!-- 复制任务，名字自定义 -->
+        <table_test_copy>
+            <!-- cluster_pull要在remote_servers中有配置 -->
+            <cluster_pull>src_cluster</cluster_pull>
+            <database_pull>db_backup_test</database_pull>
+            <table_pull>bl_po</table_pull>
+
+            <!-- cluster_push也要在remote_servers中有配置 -->
+            <cluster_push>dst_cluster</cluster_push>
+            <database_push>db_backup_test</database_push>
+            <table_push>bl_po</table_push>
+
+            <!-- 目标集群没有表的情况下，会根据下面的配置来创建表 -->
+            <engine>
+            ENGINE = ReplicatedMergeTree('/clickhouse/db_backup_test/tables/{shard}/bl_po','{replica}')
+            PARTITION BY toYYYYMM(create_time)
+            PRIMARY KEY bill_no
+            ORDER BY bill_no
+            </engine>
+            
+            <!-- sharding_key用来控制用什么方式写入目的端集群 -->
+            <sharding_key>rand()</sharding_key>
+          
+          	<!-- Optional expression that filter data while pull them from source servers -->
+            <!-- <where_condition></where_condition> -->
+          
+          	<!-- <enabled_partitions> -->
+            <!-- </enabled_partitions> -->
+        </table_test_copy>
+    </tables>
+</yandex>
+```
+
+这个配置文件是用于开始前写入zk节点上的，如下：
+
+```sh
+bin/zkCli.sh create /clickhouse/copytasks ""
+bin/zkCli.sh create /clickhouse/copytasks/test ""
+bin/zkCli.sh create /clickhouse/copytasks/test/description "`cat task.xml`"
+
+# 查看任务信息
+bin/zkCli.sh get /clickhouse/copytasks/test/description
+
+# 更新任务信息
+bin/zkCli.sh set /clickhouse/copytasks/test/description "`cat task.xml`"
+
+# 启动任务前台
+clickhouse-copier --config /var/lib/clickhouse/backup/zookeeper.xml  --task-path /clickhouse/copytasks/test --base-dir /tmp/copylogs
+# 启动任务后台
+clickhouse-copier --daemon --config /var/lib/clickhouse/backup/zookeeper.xml  --task-path /clickhouse/copytasks/test --base-dir /tmp/copylogs
+```
+
+> 注意事项：
+>
+> - 原始表建表语句需要指定 `partition by`，在测试的时候由于没有指定，导致任务失败；
+> - 对于物化视图复制，`table_pull` 表名需要添加 `.inner.` 前缀，不然任务会因找不到分区信息而失败，另外目标集群的物化视图需要提前创建好，不然由任务生成的表为普通表；
+> - 复制过程使用的是 `insert into` 方式来批量写入数据，所以会触发物化视图的数据更新（如果数据量大的话，会很慢）；
+> - 在集群间复制（多分片），数据会打乱；
+> - 复制任务会在 zookeeper 中记录状态，但是表中已经处理过的 partition 下次任务不会再处理（即使有新数据）。
+> - 如果做备份需要有1个ck备份集群，同步任务xml文件需要弄一个批量生成的工具。
+
+#### clickhouse-backup
+
+[AlexAkulov/clickhouse-backup](https://github.com/AlexAkulov/clickhouse-backup)
+
+**特征**
+
+- 轻松创建和还原所有或特定表的备份
+- 在文件系统上高效存储多个备份
+- 通过流压缩上传和下载
+- 支持远程存储上的增量备份
+- 适用于AWS，Azure，GCS，腾讯COS，FTP
+
+**局限性**
+
+- 支持高于1.1.54390和20.10之前的ClickHouse
+- 仅MergeTree系列表引擎
+- 备份“分层存储”或storage_policy不支持！
+- 不支持在ClickHouse 20.10中默认启用的“原子”数据库引擎！
+- 云存储上的最大备份大小为5TB
+- AWS S3上的最大零件数为10,000（如果您的数据库大于1TB，则增加part_size）
+
+
+
+docker部署：
+
+```sh
+# 查看要备份的表
+docker run -it --rm --network host \
+-v /data/docker_volumn/clickhouse/chs01012:/var/lib/clickhouse \
+-v /data/clickhouse/backup_config.yml:/etc/clickhouse-backup/config.yml \
+alexakulov/clickhouse-backup:0.6.4 tables
+
+# 创建一个全备
+docker run -it --rm --network host \
+-v /data/docker_volumn/clickhouse/chs01012:/var/lib/clickhouse \
+-v /data/clickhouse/backup_config.yml:/etc/clickhouse-backup/config.yml \
+alexakulov/clickhouse-backup:0.6.4 create `date "+%Y-%m-%dT%H-%M-%S"`
+
+# 单表备份
+
+# 多表备份
+
+# 查看备份
+docker run -it --rm --network host \
+-v /data/docker_volumn/clickhouse/chs01012:/var/lib/clickhouse \
+-v /data/clickhouse/backup_config.yml:/etc/clickhouse-backup/config.yml \
+alexakulov/clickhouse-backup:0.6.4 list
+
+# 恢复(恢复被删除的表)
+docker run -it --rm --network host \
+-v /data/docker_volumn/clickhouse/chs01012:/var/lib/clickhouse \
+-v /data/clickhouse/backup_config.yml:/etc/clickhouse-backup/config.yml \
+alexakulov/clickhouse-backup:0.6.4 restore -t db_backup_test.bl_po 2021-03-04T22-23-40
+
+# 恢复(只恢复表结构)
+
+# 恢复(只恢复数据)
+docker run -it --rm --network host \
+-v /data/docker_volumn/clickhouse/chs01012:/var/lib/clickhouse \
+-v /data/clickhouse/backup_config.yml:/etc/clickhouse-backup/config.yml \
+alexakulov/clickhouse-backup:0.6.4 restore -t db_backup_test.bl_po --data 2021-03-04T22-23-40
+
+# 恢复(在恢复前删除表)
+
+# 二进制操作
+clickhouse-backup tables
+clickhouse-backup create $(date "+%Y-%m-%dT%H-%M-%S")
+clickhouse-backup create -t db_test.hits_v1 $(date "+%Y-%m-%dT%H-%M-%S")
+```
+
+
 
 ### 注意事项与要求
 
@@ -1834,4 +2060,8 @@ ClickHouse应用文件系统硬链接来实现即时备份，而不会导致Clic
 [云数据库ClickHouse二级索引-最佳实践](https://developer.aliyun.com/article/780402)
 
 [配置ClickHouse分布式DDL记录自动清理](https://blog.csdn.net/nazeniwaresakini/article/details/107742717)
+
+[关于clickhouse:简易教程ClickHouse-的数据备份与恢复](https://lequ7.com/guan-yu-clickhouse-jian-yi-jiao-cheng-clickhouse-de-shu-ju-bei-fen-yu-hui-fu.html)
+
+[ClickHouse 备份恢复](https://www.jianshu.com/p/3ce923d0f767)
 

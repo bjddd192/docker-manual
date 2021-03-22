@@ -277,3 +277,5 @@ cd /opt/kafka_2.11-1.1.1/bin/
 [详细讲解！Canal+Kafka实现MySQL与Redis数据同步！](https://developer.aliyun.com/article/770659)
 
 [younthu/canal_demo](https://github.com/younthu/canal_demo)
+
+[高可用Canal集群部署实战](https://mp.weixin.qq.com/s/pI48-CU24xruBLT8Cdla4Q)
