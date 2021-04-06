@@ -26,6 +26,7 @@ canal [kə'næl]，译意为水道/管道/沟渠，主要用途是基于 MySQL �
 
 ```sql
 CREATE DATABASE /*!32312 IF NOT EXISTS*/ `db_canal_manager` /*!40100 DEFAULT CHARACTER SET utf8 COLLATE utf8_bin */;
+CREATE DATABASE /*!32312 IF NOT EXISTS*/ `db_canal_tsdb` /*!40100 DEFAULT CHARACTER SET utf8 COLLATE utf8_bin */;
 
 USE `db_canal_manager`;
 
@@ -252,6 +253,10 @@ cd /opt/kafka_2.11-1.1.1/bin/
 /opt/kafka_2.11-1.1.1/bin/kafka-console-consumer.sh --bootstrap-server 10.234.6.220:9092 --from-beginning --topic ldp_canal_wms_to_ck
 ```
 
+### 异常处理
+
+[canal1.1.4出现报错column size is not match for table](https://www.askcug.com/topic/28/canal1-1-4%E5%87%BA%E7%8E%B0%E6%8A%A5%E9%94%99column-size-is-not-match-for-table?_=1617248655258)
+
 ### 参考资料
 
 [AdminGuide](https://github.com/alibaba/canal/wiki/AdminGuide)
@@ -279,3 +284,5 @@ cd /opt/kafka_2.11-1.1.1/bin/
 [younthu/canal_demo](https://github.com/younthu/canal_demo)
 
 [高可用Canal集群部署实战](https://mp.weixin.qq.com/s/pI48-CU24xruBLT8Cdla4Q)
+
+[Canal v1.1.4版本避坑指南](https://www.cnblogs.com/throwable/p/13449920.html)

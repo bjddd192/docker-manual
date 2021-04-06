@@ -4,6 +4,8 @@ DataX 是一个异构数据源离线同步工具，致力于实现包括关系�
 
 [alibaba/DataX](https://github.com/alibaba/DataX)
 
+[wgzhao/DataX](https://github.com/wgzhao/DataX)
+
 ### 容器化
 
 [idocking/docker-datax](https://github.com/idocking/docker-datax)
@@ -33,3 +35,5 @@ python /datax/bin/datax.py /datax/json/test.json
 ### 参考资料
 
 [DataX配置及使用](https://yq.aliyun.com/articles/216355)
+
+[大数据学习——dataX工具部署和源码编译](https://pianshen.com/article/4714318566/)

@@ -2061,7 +2061,11 @@ clickhouse-backup create -t db_test.hits_v1 $(date "+%Y-%m-%dT%H-%M-%S")
 
 [配置ClickHouse分布式DDL记录自动清理](https://blog.csdn.net/nazeniwaresakini/article/details/107742717)
 
+[如何处理ClickHouse超时问题](https://help.aliyun.com/document_detail/197622.html)
+
 [关于clickhouse:简易教程ClickHouse-的数据备份与恢复](https://lequ7.com/guan-yu-clickhouse-jian-yi-jiao-cheng-clickhouse-de-shu-ju-bei-fen-yu-hui-fu.html)
 
 [ClickHouse 备份恢复](https://www.jianshu.com/p/3ce923d0f767)
+
+[Flink读写Clickhouse插件介绍](https://www.aboutyun.com/forum.php?spm=a2c6h.12873639.0.0.2025233chAHKka&mod=viewthread&tid=29271)
 
