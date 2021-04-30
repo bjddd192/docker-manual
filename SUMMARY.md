@@ -48,6 +48,8 @@
             * [Airflow](hub_docker/schedule_tools/airflow.md)
         * ETL工具
             * [canal](hub_docker/etl_tools/canal.md)
+            * [debezium](hub_docker/etl_tools/debezium.md)
+            * [maxwell](hub_docker/etl_tools/maxwell.md)
     * docker 命令
         * [容器管理](command/container.md)
         * [镜像管理](command/image.md)

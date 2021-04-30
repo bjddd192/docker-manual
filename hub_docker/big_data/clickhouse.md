@@ -1641,6 +1641,8 @@ select * from system.role_grants;
 
 [clickhouse 用户权限设置](https://www.jianshu.com/p/3e08a7150fb1?utm_campaign=hugo)
 
+[ClickHouse学习系列之二【用户权限管理】](https://www.cnblogs.com/zhoujinyi/p/12613026.html)
+
 #### 配置文件
 
 [ClickHouse学习系列之三【配置文件说明】](https://www.cnblogs.com/zhoujinyi/p/12627780.html)
@@ -2006,7 +2008,9 @@ clickhouse-backup create $(date "+%Y-%m-%dT%H-%M-%S")
 clickhouse-backup create -t db_test.hits_v1 $(date "+%Y-%m-%dT%H-%M-%S")
 ```
 
+### 版本升级
 
+[Clickhouse升级操作文档](http://www.clickhouse.com.cn/topic/6046d27cb06e5e0f21ba7a2c)
 
 ### 注意事项与要求
 
@@ -2068,4 +2072,6 @@ clickhouse-backup create -t db_test.hits_v1 $(date "+%Y-%m-%dT%H-%M-%S")
 [ClickHouse 备份恢复](https://www.jianshu.com/p/3ce923d0f767)
 
 [Flink读写Clickhouse插件介绍](https://www.aboutyun.com/forum.php?spm=a2c6h.12873639.0.0.2025233chAHKka&mod=viewthread&tid=29271)
+
+[ClickHouse实现数据有限更新(Limit Update)](https://mp.weixin.qq.com/s/EW6wMXxz3_gHkBdboBpPCg)
 

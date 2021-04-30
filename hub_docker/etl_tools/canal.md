@@ -251,11 +251,19 @@ cd /opt/kafka_2.11-1.1.1/bin/
 /opt/kafka_2.11-1.1.1/bin/kafka-topics.sh --list --zookeeper 10.234.6.220:12181
 # 接收指定主题消息
 /opt/kafka_2.11-1.1.1/bin/kafka-console-consumer.sh --bootstrap-server 10.234.6.220:9092 --from-beginning --topic ldp_canal_wms_to_ck
+
+### canal-server日志调试切换
+sed -i 's/WARN/DEBUG/g' /data/docker_volumn/canal-server/conf/logback.xml
+sed -i 's/DEBUG/WARN/g' /data/docker_volumn/canal-server/conf/logback.xml
 ```
 
 ### 异常处理
 
 [canal1.1.4出现报错column size is not match for table](https://www.askcug.com/topic/28/canal1-1-4%E5%87%BA%E7%8E%B0%E6%8A%A5%E9%94%99column-size-is-not-match-for-table?_=1617248655258)
+
+[canal解析错误fetch failed by table meta:test.test](https://github.com/alibaba/canal/issues/358)
+
+[pt-online-schema-change的原理解析与应用说明](https://blog.csdn.net/eagle89/article/details/82146387)
 
 ### 参考资料
 

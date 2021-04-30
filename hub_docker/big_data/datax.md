@@ -32,8 +32,14 @@ python /datax/bin/datax.py /datax/json/test.json
 ./bin/start.sh -m datax-executor 
 ```
 
+#### 配置mongodb数据源
+
+**最重要的就是 datax-web 中验证数据库 `admin` 需要配置在 `地址` 中，数据库写在 `数据库名称` 中。** 
+
 ### 参考资料
 
 [DataX配置及使用](https://yq.aliyun.com/articles/216355)
 
 [大数据学习——dataX工具部署和源码编译](https://pianshen.com/article/4714318566/)
+
+[datax-web配置mongodb数据源](https://blog.csdn.net/Lonely_Devil/article/details/109646053)

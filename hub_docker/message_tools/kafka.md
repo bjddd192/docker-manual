@@ -43,17 +43,19 @@ kafka 是一个分布式消息系统，由 linkedin 使用 scala 编写，用作
 
 [kafka 0.8--0.11各个版本特性预览介绍](http://www.cnblogs.com/intsmaze/p/6709297.html)
 
-[kafka 各个版本差异汇总](https://www.cnblogs.com/yinzhengjie/p/9986554.html)
+[kafka 各个版本差异汇总](https://blog.csdn.net/weixin_34133829/article/details/94659514)
+
+[kafka的版本号与版本演进](https://blog.csdn.net/liuxiao723846/article/details/106020738/)
 
 ## 官方镜像
-
-[fast-data-dev / kafka-lenses-dev (Lenses Box)](https://hub.docker.com/r/landoop/fast-data-dev)
 
 [wurstmeister/zookeeper](https://hub.docker.com/r/wurstmeister/zookeeper)
 
 [wurstmeister/kafka](https://hub.docker.com/r/wurstmeister/kafka)
 
 [sheepkiller/kafka-manager](https://hub.docker.com/r/sheepkiller/kafka-manager)
+
+[fast-data-dev / kafka-lenses-dev (Lenses Box)](https://hub.docker.com/r/landoop/fast-data-dev)
 
 ## 编排文件
 
@@ -149,6 +151,12 @@ kafka-console-producer.sh --broker-list 10.234.8.41:9092,10.234.8.42:9092,10.234
 
 ```
 
+### 二进制安装
+
+[Linux Kafka 2.11-1.1.1 安装搭建](https://blog.csdn.net/wangjianan7357/article/details/81214111?utm_source=blogxgwz6)
+
+[nl2go/ansible-role-kafka](https://github.com/nl2go/ansible-role-kafka)
+
 ## 参考资料
 
 [Kafka初识](https://www.cnblogs.com/luotianshuai/p/5206662.html#autoid-0-0-0)
@@ -170,3 +178,9 @@ kafka-console-producer.sh --broker-list 10.234.8.41:9092,10.234.8.42:9092,10.234
 [docker kafkaOffsetMonitor 安装与搭建监控](https://www.e-learn.cn/content/qita/675743)
 
 [kafka监控工具KafkaOffsetMonitor配置及使用](https://www.cnblogs.com/dadonggg/p/8242682.html)
+
+[Kafka启用SASL_PLAINTEXT动态配置JAAS文件的几种方式](https://blog.csdn.net/russle/article/details/81041135)
+
+[Kafka SASL配置 & Demo测试](https://yanxml.blog.csdn.net/article/details/79562214?utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-1.control&dist_request_id=&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-1.control)
+
+[Kafka三种可视化监控管理工具Monitor/Manager/Eagle](https://cloud.tencent.com/developer/article/1667262)
