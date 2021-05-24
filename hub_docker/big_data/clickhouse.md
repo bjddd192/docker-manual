@@ -2075,3 +2075,5 @@ clickhouse-backup create -t db_test.hits_v1 $(date "+%Y-%m-%dT%H-%M-%S")
 
 [ClickHouse实现数据有限更新(Limit Update)](https://mp.weixin.qq.com/s/EW6wMXxz3_gHkBdboBpPCg)
 
+[ClickHouse基于复制的故障恢复测试](https://www.jianshu.com/p/2035691068c6?utm_campaign=maleskine&utm_content=note&utm_medium=reader_share&utm_source=weibo)
+

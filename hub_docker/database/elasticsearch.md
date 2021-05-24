@@ -155,6 +155,45 @@ docker exec -it kibana /usr/share/kibana/bin/kibana-plugin install http://10.0.4
 docker restart kibana
 ```
 
+### kibana连接需要认证的es
+
+```sh
+docker stop kibana && docker rm kibana
+
+docker run -d --name kibana -p 5601:5601 \
+-u root \
+-e ELASTICSEARCH_URL=http://10.0.30.137:9200 \
+kibana:7.6.2
+
+# 持久化 kibana，更改配置文件
+docker cp kibana:/usr/share/kibana /data/docker_volumn/kibana
+chown 1000 -R /data/docker_volumn/kibana
+
+docker stop kibana && docker rm kibana
+
+docker run -d --name kibana -p 5601:5601 --restart=always \
+-v /data/docker_volumn/kibana:/usr/share/kibana \
+kibana:7.6.2
+```
+
+```yaml
+# cat /data/docker_volumn/kibana/config/kibana.yml 
+#
+# ** THIS IS AN AUTO-GENERATED FILE **
+#
+
+# Default Kibana configuration for docker target
+server.name: kibana
+server.host: "0.0.0.0"
+elasticsearch.hosts: [ "http://10.0.30.137:9200" ]
+elasticsearch.requestTimeout: 60000
+elasticsearch.username: "elastic"
+elasticsearch.password: "belle123"
+i18n.locale: "zh-CN"
+```
+
+[Docker 部署 kibana（ ES开启了密码认证）](https://www.cnblogs.com/evescn/p/14330193.html)
+
 ## 删除数据
 
 [Delete By Query API](https://www.elastic.co/guide/en/elasticsearch/reference/6.5/docs-delete-by-query.html)
@@ -199,7 +238,79 @@ curl -X POST "http://172.17.209.53:9200/filebeat-*/_delete_by_query?conflicts=pr
 
 若数据量太大删除很慢，且不能及时释放磁盘空间，强制合并耗时更是吓人，尽量不用此方式。
 
-## 参考资料
+### Elastalert
+
+[Yelp/elastalert Github](https://github.com/Yelp/elastalert)
+
+[bitsensor/elastalert Hub docker](https://hub.docker.com/r/bitsensor/elastalert)
+
+[ElastAlert 官方文档](https://elastalert.readthedocs.io/en/latest/)
+
+[anjia0532/elastalert-docker Github](https://github.com/anjia0532/elastalert-docker)
+
+[anjia0532/elastalert-docker Hub docker](https://hub.docker.com/r/anjia0532/elastalert-docker)
+
+[Kibana Query Language](https://www.elastic.co/guide/en/kibana/current/kuery-query.html#kuery-query)
+
+#### docker 部署
+
+```sh
+docker run -d --name elastalert -p 3030:3030 \
+--net="host" \
+bitsensor/elastalert:3.0.0-beta.0
+
+# 持久化数据
+docker cp elastalert:/opt/elastalert /data/docker_volumn/elastalert
+docker cp elastalert:/opt/elastalert-server /data/docker_volumn/elastalert-server
+
+# 修改配置文件
+# /data/docker_volumn/elastalert-server/config/config.json
+# /data/docker_volumn/elastalert/config.yaml
+
+docker stop elastalert && docker rm -f elastalert
+
+docker run -d --name elastalert -p 3030:3030 --restart=always \
+-e "CONTAINER_TIMEZONE=Asia/Shanghai" \
+-e "TZ=Asia/Shanghai" \
+-v /data/docker_volumn/elastalert:/opt/elastalert \
+-v /data/docker_volumn/elastalert-server:/opt/elastalert-server \
+--net="host" \
+--name elastalert bitsensor/elastalert:3.0.0-beta.0
+
+docker logs -f elastalert
+```
+
+```sh
+docker run -d --name elastalert -p 3030:3030 -p 3333:3333 \
+--net="host" \
+-e "CONTAINER_TIMEZONE=Asia/Shanghai" \
+-e "TZ=Asia/Shanghai" \
+-e "ELASTICSEARCH_HOST=172.17.209.53" \
+anjia0532/elastalert-docker:v0.2.4
+
+docker cp elastalert:/opt/elastalert /data/docker_volumn/elastalert
+
+docker stop elastalert && docker rm -f elastalert
+
+docker run -d --name elastalert -p 3030:3030 -p 3333:3333 \
+--net="host" \
+-e "CONTAINER_TIMEZONE=Asia/Shanghai" \
+-e "TZ=Asia/Shanghai" \
+-e "ELASTICSEARCH_HOST=172.17.209.53" \
+-e "ELASTALERT_DINGTALK_ACCESS_TOKEN=67b1e7ec07cfed21eca6f4e7152a541e8d5b08a90c9ffa23b887f2b4f244b7f2" \
+-e "ELASTALERT_DINGTALK_SECURITY_TYPE=sign" \
+-e "ELASTALERT_DINGTALK_SECRET=SECd12d6a0181e1c844842be3280995454aa8130234e641d5a7b7f11ec5d7a839fe" \
+-e "ELASTALERT_DINGTALK_AT_ALL=True" \
+-e "ELASTALERT_RUN_EVERY=5" \
+-e "ELASTALERT_BUFFER_TIME=15" \
+-e "ELASTALERT_TIME_LIMIT=5" \
+-v /data/docker_volumn/elastalert:/opt/elastalert \
+anjia0532/elastalert-docker:v0.2.4
+
+docker logs -f --tail 20 elastalert
+```
+
+### 参考资料
 
 [ELKstack 中文指南](https://elkguide.elasticsearch.cn/logstash/)
 
@@ -217,3 +328,14 @@ curl -X POST "http://172.17.209.53:9200/filebeat-*/_delete_by_query?conflicts=pr
 
 [ES告警详解之Sentinl](https://www.tony-yin.site/2018/12/01/ES-Sentinl/)
 
+[ES告警详解之ElastAlert](https://www.tony-yin.site/2018/11/15/ES-ElastAlert/)
+
+[Elasticsearch7.7告警模块Elastalert](https://www.fleyun.com/2020/09/10/elasticsearch7-7%E5%91%8A%E8%AD%A6%E6%A8%A1%E5%9D%97elastalert/)
+
+[ElastAlert：『Hi，咱服务挂了』](https://blog.xizhibei.me/2017/11/19/alerting-with-elastalert/)
+
+[ElastAlert监控日志告警Web攻击行为](https://www.freebuf.com/articles/web/160254.html)
+
+[elastalert的简单运用](https://www.jianshu.com/p/f82812e0a743)
+
+[有赞线上故障管理实践初探](https://tech.youzan.com/you-zan-xian-shang-gu-zhang-guan-li-shi-jian-chu-tan/)
