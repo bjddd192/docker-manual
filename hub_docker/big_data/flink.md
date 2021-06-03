@@ -38,6 +38,8 @@ bin/sql-client.sh embedded
 
 [Flink CDC 原理及生产实践](https://cloud.tencent.com/developer/article/1769765)
 
+[FLINK笔记(二十九)：FLINK 之 MYSQL二阶提交](https://www.freesion.com/article/2464515312/)
+
 ### 视频教程
 
 [基于FlinkSQLCDC的实时数据同步方案](https://www.bilibili.com/video/av626675374/)

@@ -694,7 +694,7 @@ LIMIT 2;"
 CREATE DATABASE IF NOT EXISTS tutorial;
 
 -- 创建一个mysql引擎数据库(相当于dblink)
-CREATE DATABASE IF NOT EXISTS db_test ENGINE = MySQL('10.0.30.39:3306', 'test', 'admin', 'Admttooerif0';
+CREATE DATABASE IF NOT EXISTS db_test ENGINE = MySQL('10.0.30.39:3306', 'test', 'admin', 'Admttooerif0');
 ```
 
 #### 基础表定义

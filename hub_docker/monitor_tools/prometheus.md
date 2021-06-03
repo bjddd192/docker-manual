@@ -151,6 +151,8 @@ f1yegor/clickhouse-exporter -scrape_uri=http://172.17.209.53:51011/
 
 [blackbox_exporter/example.yml](https://github.com/prometheus/blackbox_exporter/blob/master/example.yml)
 
+[Prometheus Operator 常用指标](https://cloud.tencent.com/developer/article/1667912)
+
 ### 数据看板 grafana
 
 [官网](https://grafana.com/)
