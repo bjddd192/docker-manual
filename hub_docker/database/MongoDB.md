@@ -910,7 +910,35 @@ mongos> db.adminCommand( { movePrimary: "db_test3", to: "shard1" } )
 
 ```
 
+### 性能分析
 
+```sh
+MongoDB支持对DB的请求进行profiling，目前支持3种级别的profiling。
+0： 不开启profiling
+1： 将处理时间超过某个阈值(默认100ms)的请求都记录到DB下的system.profile集合 （类似于mysql、redis的slowlog）
+2： 将所有的请求都记录到DB下的system.profile集合（生产环境慎用）
+
+# 设置数据库的profiling
+db.setProfilingLevel(1,200)
+
+# 查询当前慢查询的状态信息
+db.getProfilingStatus()
+
+执行这条命令后，数据库中就会多出一个名为system.profile的集合，通过db.system.profile.find(filter) 命令就可以查看到引起慢查询的执行语句。
+
+# 查询执行时间大于200ms的Profile记录：
+db.system.profile.find( { millis : { $gt : 5 } } )
+
+# 查看最近的10条记录
+db.system.profile.find().limit(10).sort( { ts : -1 } ).pretty()
+
+# 查看关于某个collection的相关慢查询操作：
+db.system.profile.find({ns:'mydb.table1'}).pretty()
+```
+
+[排查MongoDB CPU使用率高的问题](https://help.aliyun.com/document_detail/62224.html?spm=a2c4g.11186623.2.8.e32034f8wRdSZz)
+
+[MongoDB CPU使用较高，如何排查？](https://www.cnblogs.com/yangxiaoyi/p/7504753.html)
 
 #### 参考资料
 

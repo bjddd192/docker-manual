@@ -38,8 +38,12 @@ python /datax/bin/datax.py /datax/json/test.json
 
 ### 参考资料
 
-[DataX配置及使用](https://yq.aliyun.com/articles/216355)
+[DataX配置及使用](https://blog.csdn.net/DONGYUXIA15810857916/article/details/78095266)
 
 [大数据学习——dataX工具部署和源码编译](https://pianshen.com/article/4714318566/)
 
 [datax-web配置mongodb数据源](https://blog.csdn.net/Lonely_Devil/article/details/109646053)
+
+[datax增量抽取mongoDB](https://blog.csdn.net/csdn_wr/article/details/113183478)
+
+[DataX调优](https://www.cnblogs.com/hit-zb/p/10940849.html)

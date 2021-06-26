@@ -37,6 +37,10 @@ kafka 是一个分布式消息系统，由 linkedin 使用 scala 编写，用作
 
 [Apache Kafka 教程](https://www.w3cschool.cn/apache_kafka/)
 
+[quickstart](http://kafka.apache.org/quickstart)
+
+[v1.1 broker configs](http://kafka.apache.org/11/documentation.html#brokerconfigs)
+
 ## 版本演变
 
 [一文看懂 kafka 消息格式的演变](https://blog.csdn.net/u013256816/article/details/80300225)
@@ -157,6 +161,28 @@ kafka-console-producer.sh --broker-list 10.234.8.41:9092,10.234.8.42:9092,10.234
 
 [nl2go/ansible-role-kafka](https://github.com/nl2go/ansible-role-kafka)
 
+### Kafka-Eagle
+
+[https://www.kafka-eagle.org/](https://www.kafka-eagle.org/)
+
+[http://download.kafka-eagle.org/](http://download.kafka-eagle.org/)
+
+[kafka-eagle-doc](https://www.kafka-eagle.org/articles/docs/documentation.html)
+
+[smartloli/kafka-eagle](https://github.com/smartloli/kafka-eagle)
+
+[Kafka监控系统Kafka Eagle剖析](https://www.cnblogs.com/smartloli/p/9371904.html)
+
+[Kafka-Eagle 安装及其使用](https://www.codenong.com/cs107106341/)
+
+[Kafka强大监控工具Kafka Eagle](https://blog.51cto.com/net881004/2538547?source=drt)
+
+### kafka-manager
+
+[yahoo/CMAK](https://github.com/yahoo/CMAK)
+
+[hleb-albau/kafka-manager-docker](https://github.com/hleb-albau/kafka-manager-docker)
+
 ## 参考资料
 
 [Kafka初识](https://www.cnblogs.com/luotianshuai/p/5206662.html#autoid-0-0-0)
@@ -184,3 +210,15 @@ kafka-console-producer.sh --broker-list 10.234.8.41:9092,10.234.8.42:9092,10.234
 [Kafka SASL配置 & Demo测试](https://yanxml.blog.csdn.net/article/details/79562214?utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-1.control&dist_request_id=&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-1.control)
 
 [Kafka三种可视化监控管理工具Monitor/Manager/Eagle](https://cloud.tencent.com/developer/article/1667262)
+
+[kafka监控方案](https://zhuanlan.zhihu.com/p/110022903)
+
+[kafka配置文件server.properties中参数配置详解](https://blog.csdn.net/xrq1995/article/details/113250468)
+
+[kafka配置参数详解](https://www.cnblogs.com/gxc2015/p/9835837.html)
+
+[kafka部署集群所需要考虑的那些事儿](https://zhuanlan.zhihu.com/p/87585687)
+
+[kafka高可用性集群](https://www.cnblogs.com/Leo_wl/p/11769396.html)
+
+[Kafka动态配置实现原理解析](https://www.cnblogs.com/lizherui/p/12271285.html)

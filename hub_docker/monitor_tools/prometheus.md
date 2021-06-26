@@ -92,6 +92,8 @@ docker run -d --name node-exporter --net host --restart=always \
 
 [Prometheus Node_Exporter监控主机性能展示Grafana](http://www.idcsec.com/2018/12/29/Prometheus-Node-Exporter%E7%9B%91%E6%8E%A7%E4%B8%BB%E6%9C%BA%E6%80%A7%E8%83%BD%E5%B1%95%E7%A4%BAGrafana/)
 
+[Centos6安装node_exporter](https://dylanyang.top/post/2020/03/21/centos6%E5%AE%89%E8%A3%85node_exporter/)
+
 #### blackbox-exporter
 
 blackbox_exporter 是用来监控http, tcp, dns, icmp协议的工具。

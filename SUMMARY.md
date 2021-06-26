@@ -21,6 +21,7 @@
             * [jumpserver](hub_docker/ops_tools/jumpserver.md)
         * 源码管理工具
             * [Gitlab](hub_docker/source_code_tools/Gitlab.md)
+            * [Flyway](hub_docker/source_code_tools/Flyway.md)
         * 监控工具
             * [Pinpoint](hub_docker/monitor_tools/Pinpoint.md)
             * [Prometheus](hub_docker/monitor_tools/prometheus.md)
@@ -29,8 +30,11 @@
             * [php](hub_docker/developer_tools/php.md)
             * [jenkins](hub_docker/developer_tools/jenkins.md)
             * [nexus2](hub_docker/developer_tools/nexus2.md)
+            * [jenkins-x](hub_docker/developer_tools/jenkins-x.md)
+            * [chartmuseum](hub_docker/developer_tools/chartmuseum.md)
         * 消息工具
             * [kafka](hub_docker/message_tools/kafka.md)
+            * [pulsar](hub_docker/message_tools/pulsar.md)
         * 数据库
             * [MySQL](hub_docker/database/mysql.md)
             * [Oracle](hub_docker/database/Oracle.md)
