@@ -32,6 +32,7 @@
             * [nexus2](hub_docker/developer_tools/nexus2.md)
             * [jenkins-x](hub_docker/developer_tools/jenkins-x.md)
             * [chartmuseum](hub_docker/developer_tools/chartmuseum.md)
+            * [devpi](hub_docker/developer_tools/devpi.md)
         * 消息工具
             * [kafka](hub_docker/message_tools/kafka.md)
             * [pulsar](hub_docker/message_tools/pulsar.md)
