@@ -98,6 +98,12 @@ curl \
 
 # web验证
 http://10.0.30.205:9527/
+# bkvm，默认是关闭的，需自行开启
+http://10.0.30.205:7750/
+
+# cluster页面无法访问的处理
+bin/pulsar-admin clusters get standalone
+bin/pulsar-admin clusters update standalone --url http://10.0.30.205:8080 --broker-url pulsar://127.0.0.1:6650
 ```
 
 ### 参考资料

@@ -35,4 +35,6 @@ https://github.com/bcicen/ctop
 quay.io 的可以用 ustc 的
 quay.mirrors.ustc.edu.cn/kubernetes-ingress-controller/nginx-ingress-controller:0.22.0
 
+[Azure 镜像代理](https://www.chenshaowen.com/blog/developing-tips-18.html#1-azure-%E9%95%9C%E5%83%8F%E4%BB%A3%E7%90%86)
+
 docker stack

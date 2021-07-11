@@ -33,6 +33,8 @@
             * [jenkins-x](hub_docker/developer_tools/jenkins-x.md)
             * [chartmuseum](hub_docker/developer_tools/chartmuseum.md)
             * [devpi](hub_docker/developer_tools/devpi.md)
+            * [tekton](hub_docker/developer_tools/tekton.md)
+            * [drone](hub_docker/developer_tools/drone.md)
         * 消息工具
             * [kafka](hub_docker/message_tools/kafka.md)
             * [pulsar](hub_docker/message_tools/pulsar.md)
