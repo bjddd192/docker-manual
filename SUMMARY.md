@@ -34,7 +34,9 @@
             * [chartmuseum](hub_docker/developer_tools/chartmuseum.md)
             * [devpi](hub_docker/developer_tools/devpi.md)
             * [tekton](hub_docker/developer_tools/tekton.md)
+            * [argo-cd](hub_docker/developer_tools/argo-cd.md)
             * [drone](hub_docker/developer_tools/drone.md)
+            * [node](hub_docker/developer_tools/node.md)
         * 消息工具
             * [kafka](hub_docker/message_tools/kafka.md)
             * [pulsar](hub_docker/message_tools/pulsar.md)
