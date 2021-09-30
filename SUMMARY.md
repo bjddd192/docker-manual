@@ -19,6 +19,7 @@
         * 运维工具
             * [rundeck](hub_docker/ops_tools/rundeck.md)
             * [jumpserver](hub_docker/ops_tools/jumpserver.md)
+            * [WordPress](hub_docker/ops_tools/WordPress.md)
         * 源码管理工具
             * [Gitlab](hub_docker/source_code_tools/Gitlab.md)
             * [Flyway](hub_docker/source_code_tools/Flyway.md)
@@ -59,6 +60,7 @@
             * [canal](hub_docker/etl_tools/canal.md)
             * [debezium](hub_docker/etl_tools/debezium.md)
             * [maxwell](hub_docker/etl_tools/maxwell.md)
+            * [MongoShake](hub_docker/etl_tools/MongoShake.md)
     * docker 命令
         * [容器管理](command/container.md)
         * [镜像管理](command/image.md)

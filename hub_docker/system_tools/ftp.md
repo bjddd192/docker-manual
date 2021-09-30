@@ -29,3 +29,7 @@ ftp://scm:scm2Ftp@10.0.43.24/
 [FileZilla](https://filezilla-project.org)
 
 支持全平台。
+
+## 参考资料
+
+[深入挖掘vsftpd服务](https://blog.51cto.com/467754239/1440658)

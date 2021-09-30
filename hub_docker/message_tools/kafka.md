@@ -161,6 +161,12 @@ kafka-console-producer.sh --broker-list 10.234.8.41:9092,10.234.8.42:9092,10.234
 
 [nl2go/ansible-role-kafka](https://github.com/nl2go/ansible-role-kafka)
 
+### 性能测试
+
+```sh
+kafka-consumer-perf-test.sh --broker-list 10.10.30.66:9092  --messages 20000 --topic topic_dp_oms_bl_order --reporting-interval 3000 --show-detailed-stats
+```
+
 ### Kafka-Eagle
 
 [https://www.kafka-eagle.org/](https://www.kafka-eagle.org/)

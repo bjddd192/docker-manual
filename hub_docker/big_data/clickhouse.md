@@ -2071,6 +2071,12 @@ clickhouse-backup create -t db_test.hits_v1 $(date "+%Y-%m-%dT%H-%M-%S")
 
 [ClickHouse 备份恢复](https://www.jianshu.com/p/3ce923d0f767)
 
+[查看文件目录是否为硬链接](https://blog.csdn.net/taoshihan/article/details/118565099)
+
+[Linux 软连接和硬链接](https://blog.csdn.net/MyySophia/article/details/104823673)
+
+[linux查看硬链接对应的所有文件](https://blog.51cto.com/liuqun/1982654)
+
 [Flink读写Clickhouse插件介绍](https://www.aboutyun.com/forum.php?spm=a2c6h.12873639.0.0.2025233chAHKka&mod=viewthread&tid=29271)
 
 [ClickHouse实现数据有限更新(Limit Update)](https://mp.weixin.qq.com/s/EW6wMXxz3_gHkBdboBpPCg)
