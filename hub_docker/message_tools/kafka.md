@@ -164,8 +164,18 @@ kafka-console-producer.sh --broker-list 10.234.8.41:9092,10.234.8.42:9092,10.234
 ### 性能测试
 
 ```sh
-kafka-consumer-perf-test.sh --broker-list 10.10.30.66:9092  --messages 20000 --topic topic_dp_oms_bl_order --reporting-interval 3000 --show-detailed-stats
+kafka-consumer-perf-test.sh --broker-list 10.10.30.66:9092 \
+--topic topic_dp_oms_bl_order \
+--messages 200000 \
+--reporting-interval 3000 --show-detailed-stats
+
+kafka-consumer-perf-test.sh --broker-list 10.10.30.11:9092,10.10.30.12:9092,10.10.30.13:9092 \
+--topic bms_db01_bms_bl_express \
+--messages 200000 \
+--reporting-interval 3000 --show-detailed-stats
 ```
+
+[Kafka 性能测试脚本详解](https://blog.csdn.net/RandomParty/article/details/115211826)
 
 ### Kafka-Eagle
 
