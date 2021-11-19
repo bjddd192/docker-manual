@@ -34,6 +34,7 @@
             * [jenkins-x](hub_docker/developer_tools/jenkins-x.md)
             * [chartmuseum](hub_docker/developer_tools/chartmuseum.md)
             * [devpi](hub_docker/developer_tools/devpi.md)
+            * [verdaccio](hub_docker/developer_tools/verdaccio.md)
             * [tekton](hub_docker/developer_tools/tekton.md)
             * [argo-cd](hub_docker/developer_tools/argo-cd.md)
             * [drone](hub_docker/developer_tools/drone.md)
