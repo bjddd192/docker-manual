@@ -55,6 +55,22 @@ docker-compose up -d
 
 钉钉告警的关键字配置为：sentry，才能收到告警信息哦。
 
+### 数据清理
+
+```sh
+# 修改 /data/onpremise/.env 文件，调整 SENTRY_EVENT_RETENTION_DAYS 参数
+docker-compose ps web worker cron sentry-cleanup
+docker-compose restart web worker cron sentry-cleanup
+
+# 保留10天数据。cleanup的使用delete命令删除postgresql数据，
+# 但postgrdsql对于delete, update等操作，只是将对应行标志为DEAD，并没有真正释放磁盘空间
+docker exec -it $(docker ps | grep onpremise_worker | awk '{print($1)}') bash
+sentry cleanup --days 10
+
+docker exec -it $(docker ps | grep postgres | awk '{print($1)}') bash
+vacuumdb -U postgres -d postgres -v -f --analyze
+```
+
 ### 参考资料
 
 [Sentry 入门实战](http://sinhub.cn/2019/07/getting-started-guide-of-sentry/)
@@ -62,3 +78,5 @@ docker-compose up -d
 [自建sentry服务器后，无法收到邮件问题](https://blog.csdn.net/socct_yj/article/details/103039698)
 
 [Sentry快速开始并集成钉钉群机器人](https://www.cnblogs.com/cjsblog/p/10585213.html)
+
+[sentry历史数据清理](https://www.yp14.cn/2019/10/21/sentry%E5%8E%86%E5%8F%B2%E6%95%B0%E6%8D%AE%E6%B8%85%E7%90%86/)

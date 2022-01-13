@@ -310,6 +310,15 @@ anjia0532/elastalert-docker:v0.2.4
 docker logs -f --tail 20 elastalert
 ```
 
+### 异常处理
+
+```sh
+[2021-11-27T15:51:42,772][WARN ][o.e.d.s.f.s.h.UnifiedHighlighter] [nm-50lI] The length [10485760] of [message] field of [rycQYn0BnVG11kWS3KZq] doc of [filebeat-6.5.4-2021.11.27] index has exceeded the allowed maximum of [1000000] set for the next major Elastic version. This maximum can be set by changing the [index.highlight.max_analyzed_offset] index level setting. For large texts, indexing with offsets or term vectors is recommended!
+
+# 索引默认偏移量设置过小，需要调整index.highlight.max_analyzed_offset的值，这个值默认为1000000，设置过大会给内存带来相当大负担，所以要根据服务器具体条件设置。
+curl -XPUT http://127.0.0.1:9200/_settings -H 'Content-Type: application/json' -d' {"index" : {"highlight.max_analyzed_offset" : 100000000}}'
+```
+
 ### 参考资料
 
 [ELKstack 中文指南](https://elkguide.elasticsearch.cn/logstash/)

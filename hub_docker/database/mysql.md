@@ -4,6 +4,8 @@
 
 [Hub官方](https://hub.docker.com/_/mysql/)
 
+[mysql-replication](https://hub.docker.com/r/bergerx/mysql-replication)
+
 ## 启动命令
 
 ```sh
