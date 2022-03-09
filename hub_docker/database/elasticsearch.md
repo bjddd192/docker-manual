@@ -4,6 +4,8 @@
 
 [elastic past releases](https://www.elastic.co/cn/downloads/past-releases)
 
+[Elastic开源与收费版本对比](https://www.elastic.co/cn/subscriptions)
+
 kibana 告警解决方案：
 
 [sirensolutions/sentinl](https://github.com/sirensolutions/sentinl)
@@ -348,3 +350,5 @@ curl -XPUT http://127.0.0.1:9200/_settings -H 'Content-Type: application/json' -
 [elastalert的简单运用](https://www.jianshu.com/p/f82812e0a743)
 
 [有赞线上故障管理实践初探](https://tech.youzan.com/you-zan-xian-shang-gu-zhang-guan-li-shi-jian-chu-tan/)
+
+[安装 Kibana（本地及 Docker）- Elastic Stack 实战手册](https://developer.aliyun.com/article/784123)
