@@ -4,6 +4,13 @@ LDAP统一认证服务。LDAP的开源实现是OpenLDAP，它比商业产品一�
 
 [openldap官网](https://www.openldap.org/)
 
+- o – organization（组织 - 公司）
+- ou – organization unit（组织单元 - 部门）
+- c - countryName（国家）
+- dc - domainComponent（域名）
+- sn – suer name（真实名称）
+- cn - common name（常用名称）
+
 ### 官方镜像
 
 [osixia/openldap](https://hub.docker.com/r/osixia/openldap)
@@ -71,12 +78,12 @@ EOF
 # 特别注意一定要加上宿主机的IP地址，反正是自己颁发的证书，怎么加都行！！！
 # 加上本机回环地址，加上ldap容器名，我这里容器名待会设置成openldap
 # 如果你要放到公网去的话，那一可以加上FQDN地址
-cat > ldap-csr.json << EOF
+cat > /data/docker_volumn/openldap/certs/ldap-csr.json << EOF
 {
     "CN": "scm-ldap.lesoon.com",
     "hosts": [
       "127.0.0.1",
-	  "10.0.43.27",
+      "10.0.43.27",
       "scm-ldap.lesoon.com"
     ],
     "key": {
@@ -85,11 +92,11 @@ cat > ldap-csr.json << EOF
     },
     "names": [
         {
-			"C": "CN",
-	        "ST": "Guangdong",
-	        "L": "Shenzhen",
-	        "O": "Lesoon",
-	        "OU": "DevOps"
+            "C": "CN",
+            "ST": "Guangdong",
+            "L": "Shenzhen",
+            "O": "Lesoon",
+            "OU": "DevOps"
         }
     ]
 }
@@ -252,6 +259,8 @@ ldapadd -Y EXTERNAL -H ldapi:/// -f /root/disable_anon.ldif
 ### 多主复制
 
 未实验成功，老是报证书错误，如：60221246 slap_client_connect: URI=ldap://scm-ldap2.lesoon.com Error, ldap_start_tls failed (-11)，暂时忽略。
+
+经查会docker版本复制有BUG，暂时忽略。
 
 #### TLS
 
@@ -654,3 +663,9 @@ NOTE: custom log subsystems may be later installed by specific code
 [烂泥：openldap数据备份与恢复](https://www.ilanni.com/?p=14065)
 
 [How to restore backups](https://github.com/osixia/docker-openldap-backup/issues/5)
+
+[利用 Docker 为自己打造一套 OpenLdap 认证系统](https://www.jakehu.me/2020/ldap-docker/)
+
+[openldap 高可用与自助修改密码部署](https://www.cnblogs.com/lixinliang/p/15964645.html)
+
+[replication](https://www.openldap.org/doc/admin24/replication.html)

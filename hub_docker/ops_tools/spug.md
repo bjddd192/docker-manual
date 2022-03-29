@@ -20,7 +20,7 @@ docker exec spug init_spug admin spug.dev
 docker restart spug
 
 # http://10.10.234.80/
-# 用户名： admin  
+# 用户名： admin
 # 密码： spug.dev
 ```
 

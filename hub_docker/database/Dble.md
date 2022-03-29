@@ -4,9 +4,13 @@
 
 [github](https://github.com/actiontech/dble)
 
+[gitlab官方文档(推荐)](https://github.com/actiontech/dble-docs-cn/blob/3.21.10.0/tag/SUMMARY.md)
+
 [官方文档](https://actiontech.github.io/dble-docs-cn/)
 
 [dockerhub](https://hub.docker.com/r/actiontech/dble)
+
+[DBLE系列公开课](https://ke.qq.com/course/1586564?taid=7337384691119492)
 
 ### 安装部署
 
@@ -23,7 +27,7 @@ networks:
                   gateway: 172.18.0.253
 services:
     mysql1:
-        image: mysql:5.7
+        image: mysql:8.0.13
         container_name: backend-mysql1
         hostname: backend-mysql1
         privileged: true
@@ -37,7 +41,7 @@ services:
         environment:
             MYSQL_ROOT_PASSWORD: 123456
     mysql2:
-        image: mysql:5.7
+        image: mysql:8.0.13
         container_name: backend-mysql2
         hostname: backend-mysql2
         privileged: true

@@ -29,6 +29,12 @@ docker system prune
 docker system prune -a
 # 强制清理所有无用对象
 docker system prune --volumes -a -f
+
+# 按指定标签清理镜像
+docker image prune -a -f --filter "label=maker=flow.aliyun.com"
+
+# 按指定镜像标签清理无用对象
+docker system prune --volumes -a -f --filter="label!=io.kubernetes.container.name=istio-init"
 ```
 
 ## 参考资料
