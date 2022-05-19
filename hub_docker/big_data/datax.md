@@ -47,3 +47,9 @@ python /datax/bin/datax.py /datax/json/test.json
 [datax增量抽取mongoDB](https://blog.csdn.net/csdn_wr/article/details/113183478)
 
 [DataX调优](https://www.cnblogs.com/hit-zb/p/10940849.html)
+
+[db2插件下载](https://download.csdn.net/user/scdy0901/)
+
+[DataX 通用RDBMSWriter](https://www.shulanxt.com/datawarehouse/datax/dataxrdbmswriter)
+
+[datax参数设置_DataX Web数据增量同步配置说明](https://blog.csdn.net/weixin_39641463/article/details/113027797)
