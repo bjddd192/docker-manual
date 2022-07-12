@@ -6,6 +6,8 @@ Apollo（阿波罗）是一款可靠的分布式配置管理中心，诞生于�
 
 [dockerhub](https://hub.docker.com/u/apolloconfig)
 
+[idoop/docker-apollo](https://github.com/idoop/docker-apollo)
+
 [Apollo配置中心介绍](https://github.com/apolloconfig/apollo/wiki/Apollo%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83%E4%BB%8B%E7%BB%8D)
 
 ### 部署步骤
