@@ -14,6 +14,9 @@ docker ps -s
 
 # 查看容器 IP 地址
 docker inspect --format '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' 容器ID/NAME
+# 查看多个容器 IP 地址
+docker inspect --format '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(docker ps | grep dble | awk '{print $1}')
+docker ps | grep dble | awk '{print $1}' | xargs docker inspect --format '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}'
 
 # 查看 volume
 docker volume ls
@@ -34,6 +37,8 @@ docker stats -a --format "table {{.Container}}\t{{.CPUPerc}}\t{{.MemUsage}}" --n
 # 解决 docker 终端宽度、高度显示不正确
 docker exec -it --env COLUMNS=`tput cols` --env LINES=`tput lines` your_container_name /bin/bash
 docker exec -it --env COLUMNS=200 --env LINES=200 your_container_name /bin/bash
+# 批量执行脚本
+/root/local/bin/docker ps | grep dble | awk '{print $1}' | xargs -I {} /root/local/bin/docker exec {} /opt/dble/bin/reload.sh
 
 # 重命名容器
 docker rename youthful_minsky nginx
