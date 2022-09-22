@@ -34,6 +34,8 @@ docker run -d --name elasticsearch --restart=always -p 9200:9200 -p 9300:9300 \
 
 # 检查es健康状态：
 curl http://127.0.0.1:9200/_cat/health
+# 检查索引健康状态
+curl http://127.0.0.1:9200/_cat/indices
 ```
 
 ## 持久化数据
