@@ -155,6 +155,8 @@ f1yegor/clickhouse-exporter -scrape_uri=http://172.17.209.53:51011/
 
 [Prometheus Operator 常用指标](https://cloud.tencent.com/developer/article/1667912)
 
+[prometheus专题](https://developer.aliyun.com/article/830328)
+
 ### 数据看板 grafana
 
 [官网](https://grafana.com/)
