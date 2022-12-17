@@ -153,6 +153,11 @@ kafka-console-consumer.sh --bootstrap-server 10.234.8.41:9092,10.234.8.42:9092,1
 
 kafka-console-producer.sh --broker-list 10.234.8.41:9092,10.234.8.42:9092,10.234.8.43:9092 --topic wms_e_stk_syn_record
 
+./kafka-consumer-groups.sh help
+# --dry-run（默认值）用于打印计划要重置的偏移量
+./kafka-consumer-groups.sh --bootstrap-server 10.0.43.24:9092 --reset-offsets --to-latest --group wms-api --dry-run --topic wms_e_stk_book
+# --execute 更新偏移量
+./kafka-consumer-groups.sh --bootstrap-server 10.0.43.24:9092 --reset-offsets --to-latest --group wms-api --execute --topic wms_e_stk_book
 ```
 
 ### 二进制安装
@@ -192,6 +197,17 @@ kafka-consumer-perf-test.sh --broker-list 10.10.30.11:9092,10.10.30.12:9092,10.1
 [Kafka-Eagle 安装及其使用](https://www.codenong.com/cs107106341/)
 
 [Kafka强大监控工具Kafka Eagle](https://blog.51cto.com/net881004/2538547?source=drt)
+
+#### 在kafka-eagle上删除topic
+
+```sh
+在删除topic的时候遇到了一个问题：Are you sure you want to delete it? Admin Token
+找了半天，原来在安装kafka-eagle的时候，在配置文件conf/system-config.properties里面有一段配置
+# delete kafka topic token
+######################################                                                                                                     
+kafka.eagle.topic.token=xxxxxx
+这个xxxxxx就是上面的token
+```
 
 ### kafka-manager
 
@@ -238,3 +254,7 @@ kafka-consumer-perf-test.sh --broker-list 10.10.30.11:9092,10.10.30.12:9092,10.1
 [kafka高可用性集群](https://www.cnblogs.com/Leo_wl/p/11769396.html)
 
 [Kafka动态配置实现原理解析](https://www.cnblogs.com/lizherui/p/12271285.html)
+
+[kafka-consumer-groups.sh 命令行工具使用手册，附测试用例](https://blog.csdn.net/qq_32779119/article/details/127825050)
+
+[When JMX_PORT specified, cannot use kafka-console-producer/consumer](https://github.com/wurstmeister/kafka-docker/issues/171)

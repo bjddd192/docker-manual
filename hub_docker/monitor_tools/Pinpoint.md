@@ -87,7 +87,7 @@ cd /opt/hbase/hbase-1.2.6/bin
 > list
 > describe 'TraceV2'
 > disable 'TraceV2'
-> alter 'TraceV2' , {NAME=>'S',TTL=>'2592000'}
+> alter 'TraceV2' , {NAME=>'S',TTL=>'1209600'}
 > enable 'TraceV2'
 > describe  'TraceV2'
 > major_compact  'TraceV2'
@@ -97,6 +97,12 @@ cd /opt/hbase/hbase-1.2.6/bin
 > enable 'ApplicationTraceIndex'
 > describe  'ApplicationTraceIndex'
 > major_compact  'ApplicationTraceIndex'
+> describe  'AgentStatV2'
+> disable 'AgentStatV2'
+> alter 'AgentStatV2' , {NAME=>'S',TTL=>'1209600'}
+> enable 'AgentStatV2'
+> describe  'AgentStatV2'
+> major_compact  'AgentStatV2'
 > 
 > # 开发环境执行（清理多余容器id，未成功，清除了agent，数据却不再上来，需要重启应用，不可取）
 > list
