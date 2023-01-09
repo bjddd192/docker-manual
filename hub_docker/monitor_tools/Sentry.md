@@ -69,6 +69,8 @@ sentry cleanup --days 10
 
 docker exec -it $(docker ps | grep postgres | awk '{print($1)}') bash
 vacuumdb -U postgres -d postgres -v -f --analyze
+
+# kafka也需要修改配置来调整磁盘回收时间
 ```
 
 ### 参考资料
