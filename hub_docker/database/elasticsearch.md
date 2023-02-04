@@ -354,3 +354,11 @@ curl -XPUT http://127.0.0.1:9200/_settings -H 'Content-Type: application/json' -
 [有赞线上故障管理实践初探](https://tech.youzan.com/you-zan-xian-shang-gu-zhang-guan-li-shi-jian-chu-tan/)
 
 [安装 Kibana（本地及 Docker）- Elastic Stack 实战手册](https://developer.aliyun.com/article/784123)
+
+[Docker部署ELK（配置密码登录）及Elastalert企业微信告警配置](https://blog.csdn.net/xiaohai348257622/article/details/126707602)
+
+[ELK7.11.2版本安装部署及ElastAlert告警相关配置](https://www.cnblogs.com/Oejfr/p/14585795.html)
+
+[ElasticSearch Stack 各个版本收费情况](https://blog.csdn.net/vkingnew/article/details/91549698)
+
+[ElastAlert-配置](https://blog.csdn.net/lihaipeng0417/article/details/118297163)
