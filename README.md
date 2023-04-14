@@ -38,3 +38,5 @@ quay.mirrors.ustc.edu.cn/kubernetes-ingress-controller/nginx-ingress-controller:
 [Azure 镜像代理](https://www.chenshaowen.com/blog/developing-tips-18.html#1-azure-%E9%95%9C%E5%83%8F%E4%BB%A3%E7%90%86)
 
 docker stack
+
+[Docker 网络代理设置](https://my.oschina.net/styshoo/blog/841308)
