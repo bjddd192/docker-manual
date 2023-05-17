@@ -258,3 +258,5 @@ kafka.eagle.topic.token=xxxxxx
 [kafka-consumer-groups.sh 命令行工具使用手册，附测试用例](https://blog.csdn.net/qq_32779119/article/details/127825050)
 
 [When JMX_PORT specified, cannot use kafka-console-producer/consumer](https://github.com/wurstmeister/kafka-docker/issues/171)
+
+[Kafka 的 Docker 部署](https://zhuanlan.zhihu.com/p/586005021)
