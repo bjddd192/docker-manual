@@ -31,6 +31,6 @@ create database jumpserver;
 
 ## 3.0版本
 
-[离线安装](https://docs.jumpserver.org/zh/v3/install/linux_stand_alone/off_line_install/)
+[离线安装](https://docs.jumpserver.org/zh/v3/installation/setup_linux_standalone/offline_install/)
 
 [MFA 认证](https://docs.jumpserver.org/zh/master/admin-guide/authentication/mfa/#1-mfa)

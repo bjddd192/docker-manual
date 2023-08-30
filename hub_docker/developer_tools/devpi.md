@@ -35,7 +35,7 @@ devpi index -c dev
 # 查看索引信息
 devpi getjson /root
 # 修改默认镜像源地址(devpi默认使用的官方镜像源地址，慢且不稳定，修改成豆瓣源)
-devpi index pypi type=mirror mirror_url=https://pypi.douban.com/simple mirror_web_url_fmt=https://pypi.doubanio.com/simple/{name}/
+devpi index pypi type=mirror mirror_url=https://mirrors.aliyun.com/pypi/simple mirror_web_url_fmt=https://mirrors.aliyun.com/pypi/simple/{name}/
 ```
 
 ### 验证私服
@@ -84,6 +84,21 @@ devpi upload
 
 # 查看索引
 devpi list
+```
+
+### 问题处理
+
+[devpi-server can't modify root/pypi index offline](https://github.com/devpi/devpi/issues/615)
+
+升级 pip install devpi-server==4.8.1 版本解决
+
+```sh
+docker exec -it  devpi  bash
+pip install devpi-server==4.8.1
+devpi index pypi type=mirror mirror_url=https://mirrors.aliyun.com/pypi/simple mirror_web_url_fmt=https://mirrors.aliyun.com/pypi/simple/{name}/
+
+# 重启 devpi
+docker restart devpi
 ```
 
 ### 参考资料

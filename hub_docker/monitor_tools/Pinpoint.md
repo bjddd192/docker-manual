@@ -87,19 +87,19 @@ cd /opt/hbase/hbase-1.2.6/bin
 > list
 > describe 'TraceV2'
 > disable 'TraceV2'
-> alter 'TraceV2' , {NAME=>'S',TTL=>'1209600'}
+> alter 'TraceV2' , {NAME=>'S',TTL=>'604800'}
 > enable 'TraceV2'
 > describe  'TraceV2'
 > major_compact  'TraceV2'
 > describe  'ApplicationTraceIndex'
 > disable 'ApplicationTraceIndex'
-> alter 'ApplicationTraceIndex' , {NAME=>'I',TTL=>'1209600'}
+> alter 'ApplicationTraceIndex' , {NAME=>'I',TTL=>'604800'}
 > enable 'ApplicationTraceIndex'
 > describe  'ApplicationTraceIndex'
 > major_compact  'ApplicationTraceIndex'
 > describe  'AgentStatV2'
 > disable 'AgentStatV2'
-> alter 'AgentStatV2' , {NAME=>'S',TTL=>'1209600'}
+> alter 'AgentStatV2' , {NAME=>'S',TTL=>'604800'}
 > enable 'AgentStatV2'
 > describe  'AgentStatV2'
 > major_compact  'AgentStatV2'
