@@ -8,12 +8,14 @@
 # step 1: 安装必要的一些系统工具
 yum install -y yum-utils device-mapper-persistent-data lvm2
 # Step 2: 添加软件源信息
+# yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
 yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
 # Step 3: 更新并安装 Docker-CE
 yum makecache fast
 # 安装指定版本的Docker-CE:
 yum list docker-ce.x86_64 --showduplicates | sort -r
 yum -y install docker-ce-18.03.0.ce-1.el7.centos
+# yum -y install docker-ce-19.03.15-3.el7
 docker --version
 # Step 4: 重定义对docker0网桥，设置镜像加速器和信任仓库
 mkdir -p /etc/docker
@@ -27,8 +29,7 @@ tee /etc/docker/daemon.json <<-'EOF'
     "https://docker.mirrors.ustc.edu.cn"
   ],
   "insecure-registries": [
-    "hub.wonhigh.cn",
-    "registry.eyd.com:5000"
+    "hub.wonhigh.cn"
   ],
   "max-concurrent-downloads": 10,
   "log-driver": "json-file",
