@@ -242,6 +242,18 @@ curl -X POST "http://172.17.209.53:9200/filebeat-*/_delete_by_query?conflicts=pr
 
 若数据量太大删除很慢，且不能及时释放磁盘空间，强制合并耗时更是吓人，尽量不用此方式。
 
+### 生命周期管理
+
+```sh
+// 需停止写入数据
+DELETE /filebeat-7.15.2
+PUT filebeat-7.15.2-2024.02.06-000001
+POST /filebeat-7.15.2-2024.02.06-000001/_alias/filebeat-7.15.2
+
+PUT istio-proxy-2024.02.06-000001
+POST /istio-proxy-2024.02.06-000001/_alias/istio-proxy
+```
+
 ### Elastalert
 
 [Yelp/elastalert Github](https://github.com/Yelp/elastalert)

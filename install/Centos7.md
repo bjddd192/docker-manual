@@ -80,6 +80,7 @@ chmod +x /usr/local/bin/docker-compose
 # 安装 docker-compose Command-line completion
 yum -y install bash-completion
 curl -L https://raw.githubusercontent.com/docker/compose/1.23.2/contrib/completion/bash/docker-compose -o /etc/bash_completion.d/docker-compose
+# curl -L https://raw.githubusercontent.com/docker/compose/1.29.2/contrib/completion/bash/docker-compose -o /etc/bash_completion.d/docker-compose
 ```
 
 ## 问题处理
