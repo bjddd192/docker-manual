@@ -5,17 +5,15 @@
 [kylemanna/openvpn](https://hub.docker.com/r/kylemanna/openvpn)
 
 ```sh
-OVPN_DATA="ovpn-data"
-docker volume create --name $OVPN_DATA
 #配置
-docker run -v $OVPN_DATA:/etc/openvpn --rm kylemanna/openvpn ovpn_genconfig -u udp://119.23.232.186
+docker run -v /data/openvpn:/etc/openvpn --rm kylemanna/openvpn ovpn_genconfig -u udp://119.23.232.186
 #密钥配置(123456)
-docker run -v $OVPN_DATA:/etc/openvpn --rm -it kylemanna/openvpn ovpn_initpki
+docker run -v /data/openvpn:/etc/openvpn --rm -it kylemanna/openvpn ovpn_initpki
 #启动
-docker run -v $OVPN_DATA:/etc/openvpn -d --name openvpn -p 1194:1194/udp --cap-add=NET_ADMIN kylemanna/openvpn
+docker run -v /data/openvpn:/etc/openvpn -d --name openvpn -p 1194:1194/udp --cap-add=NET_ADMIN kylemanna/openvpn
 #生成客户端.ovpn test为自定义名称
-docker run -v $OVPN_DATA:/etc/openvpn --rm -it kylemanna/openvpn easyrsa build-client-full eclouda nopass
-docker run -v $OVPN_DATA:/etc/openvpn --rm kylemanna/openvpn ovpn_getclient eclouda > /tmp/eclouda.ovpn
+#docker run -v /data/openvpn:/etc/openvpn --rm -it kylemanna/openvpn easyrsa build-client-full eclouda nopass
+#docker run -v /data/openvpn:/etc/openvpn --rm kylemanna/openvpn ovpn_getclient eclouda > /tmp/eclouda.ovpn
 #使用scp把test.ovpn导到本地，使用openvpn客户端打开
 
 #进入容器，修改配置
@@ -29,9 +27,9 @@ push "route 192.168.96.0 255.255.240.0"
 #需要创建用户时运行以下命令
 OVPN_DATA="ovpn-data"
 #生成客户端.ovpn test为自定义名称
-docker run -v /var/lib/docker/volumes/ovpn-data/_data:/etc/openvpn --rm -it kylemanna/openvpn easyrsa build-client-full yun.fy nopass
-docker run -v /var/lib/docker/volumes/ovpn-data/_data:/etc/openvpn --rm kylemanna/openvpn ovpn_getclient yun.fy > yun.fy.ovpn
-#使用scp把test.ovpn导到本地，使用openvpn客户端打开
+docker run -v /var/lib/docker/volumes/ovpn-data/_data:/etc/openvpn --rm -it kylemanna/openvpn easyrsa build-client-full ma.gs nopass
+docker run -v /var/lib/docker/volumes/ovpn-data/_data:/etc/openvpn --rm kylemanna/openvpn ovpn_getclient ma.gs > ma.gs.ovpn
+#使用scp把.ovpn导到本地，使用openvpn客户端打开
 
 docker run -v /var/lib/docker/volumes/ovpn-data/_data:/etc/openvpn --rm -it kylemanna/openvpn easyrsa revoke test 
 docker run -v /var/lib/docker/volumes/ovpn-data/_data:/etc/openvpn --rm -it kylemanna/openvpn easyrsa gen-crl
