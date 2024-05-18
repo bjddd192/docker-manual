@@ -27,12 +27,12 @@ push "route 192.168.96.0 255.255.240.0"
 #需要创建用户时运行以下命令
 OVPN_DATA="ovpn-data"
 #生成客户端.ovpn test为自定义名称
-docker run -v /var/lib/docker/volumes/ovpn-data/_data:/etc/openvpn --rm -it kylemanna/openvpn easyrsa build-client-full ma.gs nopass
-docker run -v /var/lib/docker/volumes/ovpn-data/_data:/etc/openvpn --rm kylemanna/openvpn ovpn_getclient ma.gs > ma.gs.ovpn
+docker run -v /data/openvpn:/etc/openvpn --rm -it kylemanna/openvpn easyrsa build-client-full ma.gs nopass
+docker run -v /data/openvpn:/etc/openvpn --rm kylemanna/openvpn ovpn_getclient ma.gs > ma.gs.ovpn
 #使用scp把.ovpn导到本地，使用openvpn客户端打开
 
-docker run -v /var/lib/docker/volumes/ovpn-data/_data:/etc/openvpn --rm -it kylemanna/openvpn easyrsa revoke test 
-docker run -v /var/lib/docker/volumes/ovpn-data/_data:/etc/openvpn --rm -it kylemanna/openvpn easyrsa gen-crl
+docker run -v /data/openvpna:/etc/openvpn --rm -it kylemanna/openvpn easyrsa revoke test 
+docker run -v /data/openvpn:/etc/openvpn --rm -it kylemanna/openvpn easyrsa gen-crl
 
 ```
 
