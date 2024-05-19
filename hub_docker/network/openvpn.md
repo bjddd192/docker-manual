@@ -49,3 +49,5 @@ docker run -v /data/openvpn:/etc/openvpn --rm -it kylemanna/openvpn easyrsa gen-
 [本机与云服务器内网互联](https://cloud.tencent.com/developer/article/2235303)
 
 [Docker部署OpenVPN就是这么简单](http://www.legendwolf.com/?id=62)
+
+[利用 openVPN 构建互访混合云环境](https://wumanho.cn/posts/openvpn/)
