@@ -215,6 +215,58 @@ kafka.eagle.topic.token=xxxxxx
 
 [hleb-albau/kafka-manager-docker](https://github.com/hleb-albau/kafka-manager-docker)
 
+## kafka 3.x版本
+
+[bitnami/zookeeper](https://hub.docker.com/r/bitnami/zookeeper)
+
+[bitnami/kafka](https://hub.docker.com/r/bitnami/kafka)
+
+[多主机docker部署kafka和zookeeper集群+kowl管理系统](https://www.bingal.com/posts/kafka-zookeeper-kowl-docker/)
+
+功能完备，部署简单
+
+```yaml
+version: "2"
+ 
+ services:
+   kafka:
+     container_name: kafka
+     image: 'bitnami/kafka:3.6.2'
+     ports:
+       - '9092:9092'
+       - '9094:9094'
+     environment:
+       ### 通用配置
+       # 允许使用kraft，即Kafka替代Zookeeper
+       - KAFKA_ENABLE_KRAFT=yes
+       - KAFKA_CFG_NODE_ID=1
+       # broker.id，必须唯一，且与KAFKA_CFG_NODE_ID一致
+       - KAFKA_BROKER_ID=1
+       # kafka角色，做broker，也要做controller
+       - KAFKA_CFG_PROCESS_ROLES=controller,broker
+       # 定义kafka服务端socket监听端口（Docker内部的ip地址和端口）
+       - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://:9094
+       # 定义外网访问地址（宿主机ip地址和端口）ip不能是0.0.0.0
+       - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka3-dev.lesoon.lan:9092,EXTERNAL://kafka3-dev.lesoon.lan:9094
+       # 定义安全协议
+       - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+       # 集群地址
+       - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@kafka:9093
+       # 指定供外部使用的控制类请求信息
+       - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+       # 设置broker最大内存，和初始内存
+       - KAFKA_HEAP_OPTS=-Xmx1024m -Xms1024m
+       # 使用Kafka时的集群id，集群内的Kafka都要用这个id做初始化，生成一个UUID即可(22byte)
+       - KAFKA_KRAFT_CLUSTER_ID=xYcCyHmJlIaLzLoBzVwIcP
+       # 允许自动创建主题
+       - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
+     network_mode: bridge
+```
+
+[Confluent Kafka](https://docs.confluent.io/platform/current/platform-quickstart.html)
+
+功能齐全，相对较重
+
 ## 参考资料
 
 [Kafka初识](https://www.cnblogs.com/luotianshuai/p/5206662.html#autoid-0-0-0)
@@ -260,3 +312,10 @@ kafka.eagle.topic.token=xxxxxx
 [When JMX_PORT specified, cannot use kafka-console-producer/consumer](https://github.com/wurstmeister/kafka-docker/issues/171)
 
 [Kafka 的 Docker 部署](https://zhuanlan.zhihu.com/p/586005021)
+
+[docker-compose部署kafka单机和集群](https://juejin.cn/post/7319541661150330918)
+
+[docker部署kafka3+zookeeper+eagle](https://blog.csdn.net/qq_39272466/article/details/131512504)
+
+[Kafka in Docker 单节点/多节点](https://flxdu.cn/2023/01/23/Kafka-in-Docker-%E5%8D%95%E8%8A%82%E7%82%B9-%E5%A4%9A%E8%8A%82%E7%82%B9/)
+
