@@ -34,3 +34,5 @@ create database jumpserver;
 [离线安装](https://docs.jumpserver.org/zh/v3/installation/setup_linux_standalone/offline_install/)
 
 [MFA 认证](https://docs.jumpserver.org/zh/master/admin-guide/authentication/mfa/#1-mfa)
+
+[JumpServer 三种常见文件传输方式的效果对比](https://kb.fit2cloud.com/?p=751734e8-4ee4-4b80-be6d-0583e0198250)
