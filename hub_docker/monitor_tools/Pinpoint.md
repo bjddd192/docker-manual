@@ -87,22 +87,28 @@ cd /opt/hbase/hbase-1.2.6/bin
 > list
 > describe 'TraceV2'
 > disable 'TraceV2'
-> alter 'TraceV2' , {NAME=>'S',TTL=>'604800'}
+> alter 'TraceV2' , {NAME=>'S',TTL=>'432000'}
 > enable 'TraceV2'
 > describe  'TraceV2'
 > major_compact  'TraceV2'
 > describe  'ApplicationTraceIndex'
 > disable 'ApplicationTraceIndex'
-> alter 'ApplicationTraceIndex' , {NAME=>'I',TTL=>'604800'}
+> alter 'ApplicationTraceIndex' , {NAME=>'I',TTL=>'432000'}
 > enable 'ApplicationTraceIndex'
 > describe  'ApplicationTraceIndex'
 > major_compact  'ApplicationTraceIndex'
 > describe  'AgentStatV2'
 > disable 'AgentStatV2'
-> alter 'AgentStatV2' , {NAME=>'S',TTL=>'604800'}
+> alter 'AgentStatV2' , {NAME=>'S',TTL=>'432000'}
 > enable 'AgentStatV2'
 > describe  'AgentStatV2'
 > major_compact  'AgentStatV2'
+> describe  'SqlMetaData_Ver2'
+> disable 'SqlMetaData_Ver2'
+> alter 'SqlMetaData_Ver2' , {NAME=>'Sql',TTL=>'432000'}
+> enable 'SqlMetaData_Ver2'
+> describe  'SqlMetaData_Ver2'
+> major_compact  'SqlMetaData_Ver2'
 > 
 > # 开发环境执行（清理多余容器id，未成功，清除了agent，数据却不再上来，需要重启应用，不可取）
 > list

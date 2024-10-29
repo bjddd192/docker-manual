@@ -66,6 +66,31 @@ docker pull hub.wonhigh.cn/retail/retail-gms-web:1.7.0-SNAPSHOT
 # sudo yum -y install docker-ce-[VERSION]
 ```
 
+## 安装docker1.19
+
+```sh
+wget https://mirrors.aliyun.com/docker-ce/linux/centos/7/x86_64/stable/Packages/docker-ce-19.03.15-3.el7.x86_64.rpm
+wget https://mirrors.aliyun.com/docker-ce/linux/centos/7/x86_64/stable/Packages/docker-ce-cli-19.03.15-3.el7.x86_64.rpm
+wget https://mirrors.aliyun.com/docker-ce/linux/centos/7/x86_64/stable/Packages/containerd.io-1.2.10-3.2.el7.x86_64.rpm
+wget https://mirrors.aliyun.com/centos/7/extras/x86_64/Packages/container-selinux-2.107-3.el7.noarch.rpm
+wget https://mirrors.aliyun.com/centos/7/os/x86_64/Packages/policycoreutils-python-2.5-34.el7.x86_64.rpm
+systemctl stop docker
+yum remove -y docker-ce docker-ce-cli containerd.io
+rm -rf /var/lib/docker
+mv /etc/systemd/system/docker.service /tmp
+mv /root/local/bin/docker* /tmp/
+rpm -ivh policycoreutils-python-2.5-34.el7.x86_64.rpm 
+rpm -ivh container-selinux-2.107-3.el7.noarch.rpm  
+rpm -ivh containerd.io-1.2.10-3.2.el7.x86_64.rpm
+rpm -ivh docker-ce-cli-19.03.15-3.el7.x86_64.rpm
+rpm -ivh docker-ce-19.03.15-3.el7.x86_64.rpm
+# 或者用yum安装
+yum install -y docker-ce-19.03.15-3.el7 docker-ce-cli-19.03.15-3.el7 containerd.io
+systemctl start docker
+docker version
+systemctl enable docker
+```
+
 ## 安装 docker-compose
 
 ```sh
